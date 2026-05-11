@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>木下大志郎 | 哲学カウンセリング</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600;700&family=Shippori+Mincho:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav__logo">木下大志郎</div>
+    <ul class="nav__links">
+      <li><a href="#about">について</a></li>
+      <li><a href="#what">哲学カウンセリングとは</a></li>
+      <li><a href="#flow">セッションの流れ</a></li>
+      <li><a href="#contact" class="nav__cta">お申し込み</a></li>
+    </ul>
+    <button class="nav__hamburger" aria-label="メニューを開く">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="top">
+    <div class="hero__geo">
+      <svg class="geo-bg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(180,150,80,0.08)" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+        <polygon points="0,800 400,200 800,800" fill="none" stroke="rgba(180,150,80,0.12)" stroke-width="1.5"/>
+        <polygon points="200,800 600,100 1000,800" fill="none" stroke="rgba(180,150,80,0.08)" stroke-width="1"/>
+        <polygon points="400,800 800,0 1200,800" fill="none" stroke="rgba(180,150,80,0.12)" stroke-width="1.5"/>
+        <circle cx="900" cy="200" r="180" fill="none" stroke="rgba(180,150,80,0.07)" stroke-width="1"/>
+        <circle cx="900" cy="200" r="120" fill="none" stroke="rgba(180,150,80,0.05)" stroke-width="1"/>
+        <circle cx="150" cy="600" r="100" fill="none" stroke="rgba(180,150,80,0.06)" stroke-width="1"/>
+        <line x1="0" y1="400" x2="1200" y2="400" stroke="rgba(180,150,80,0.05)" stroke-width="1"/>
+        <line x1="600" y1="0" x2="600" y2="800" stroke="rgba(180,150,80,0.05)" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="hero__content">
+      <p class="hero__label">Philosophical Counseling</p>
+      <h1 class="hero__name">木下&thinsp;大志郎</h1>
+      <p class="hero__title">自称哲学者</p>
+      <p class="hero__copy">
+        問いを持て。<br class="br-sp"/>それが生きることの始まりだ。
+      </p>
+      <p class="hero__sub">
+        哲学カウンセリングは、あなたの問いと向き合い、<br/>
+        思考の深みへと共に潜る対話の場です。
+      </p>
+      <div class="hero__actions">
+        <a href="#contact" class="btn btn--primary">無料相談を申し込む</a>
+        <a href="#what" class="btn btn--ghost">詳しく知る</a>
+      </div>
+    </div>
+    <div class="hero__scroll">
+      <span>scroll</span>
+      <div class="hero__scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- Quote band -->
+  <div class="quote-band">
+    <div class="quote-band__inner">
+      <blockquote>
+        <p class="quote-band__text">"The unexamined life is not worth living."</p>
+        <cite class="quote-band__cite">— Socrates</cite>
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- What is Philosophical Counseling -->
+  <section class="section what" id="what">
+    <div class="section__geo-left">
+      <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="0,0 200,200 0,400" fill="none" stroke="rgba(180,150,80,0.15)" stroke-width="1.5"/>
+        <polygon points="40,80 160,200 40,320" fill="none" stroke="rgba(180,150,80,0.08)" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="container">
+      <div class="section__header">
+        <p class="section__label">What is it?</p>
+        <h2 class="section__title">哲学カウンセリングとは</h2>
+        <div class="section__rule"></div>
+      </div>
+      <div class="what__grid">
+        <div class="what__text">
+          <p>
+            哲学カウンセリングは、心理療法でも宗教的な指導でもありません。<br/>
+            それは、あなた自身が抱く「問い」を正面から受け取り、
+            哲学的な思考の道具を用いてともに考え抜く、純粋な対話の実践です。
+          </p>
+          <p>
+            「なぜ生きるのか」「何が正しいのか」「自分とは何者か」——<br/>
+            そうした問いに答えはないかもしれない。しかし、問いを深めることで、
+            あなた自身の思考は確かに変わっていきます。
+          </p>
+          <p>
+            哲学は本来、書斎の中ではなく、ひとりひとりの生の只中にあるものです。
+          </p>
+        </div>
+        <div class="what__cards">
+          <div class="card">
+            <div class="card__icon">◇</div>
+            <h3 class="card__title">対話による思考</h3>
+            <p class="card__text">一方的なアドバイスではなく、ソクラテス的な問答を通じて、あなた自身の思考を引き出します。</p>
+          </div>
+          <div class="card">
+            <div class="card__icon">◇</div>
+            <h3 class="card__title">判断しない場</h3>
+            <p class="card__text">あなたの考えを評価・矯正することはしません。ただ、共に問い、共に考えます。</p>
+          </div>
+          <div class="card">
+            <div class="card__icon">◇</div>
+            <h3 class="card__title">思考の地図を描く</h3>
+            <p class="card__text">混沌とした思いを言語化し、思考の構造を明らかにすることで、自分の立ち位置が見えてきます。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section about" id="about">
+    <div class="about__bg-geo">
+      <svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="300" cy="300" r="280" fill="none" stroke="rgba(180,150,80,0.10)" stroke-width="1"/>
+        <circle cx="300" cy="300" r="200" fill="none" stroke="rgba(180,150,80,0.07)" stroke-width="1"/>
+        <circle cx="300" cy="300" r="120" fill="none" stroke="rgba(180,150,80,0.05)" stroke-width="1"/>
+        <polygon points="300,20 580,580 20,580" fill="none" stroke="rgba(180,150,80,0.08)" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="container">
+      <div class="about__inner">
+        <div class="about__image-wrap">
+          <div class="about__image-frame">
+            <div class="about__image-placeholder">
+              <span class="about__initials">木</span>
+            </div>
+            <div class="about__image-deco"></div>
+          </div>
+        </div>
+        <div class="about__content">
+          <div class="section__header section__header--left">
+            <p class="section__label">About</p>
+            <h2 class="section__title">木下大志郎について</h2>
+            <div class="section__rule"></div>
+          </div>
+          <p>
+            自称哲学者。特定の学派に属さず、古代ギリシャから現代思想まで、
+            思想の地形を自由に歩き回ることを信条としています。
+          </p>
+          <p>
+            哲学は「答えを教えるもの」ではなく「問いを磨くもの」だと考えています。
+            カウンセリングの場においても、私はあなたに何かを教えようとするのではなく、
+            あなたが自分自身の思考者になれるよう伴走することを目指しています。
+          </p>
+          <p>
+            「哲学は難しい」という先入観を手放し、
+            まず一度、言葉を交わしてみてください。
+          </p>
+          <div class="about__tags">
+            <span class="tag">存在論</span>
+            <span class="tag">倫理学</span>
+            <span class="tag">実存主義</span>
+            <span class="tag">ソクラテス的問答</span>
+            <span class="tag">現象学</span>
+            <span class="tag">東洋哲学</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Session Flow -->
+  <section class="section flow" id="flow">
+    <div class="container">
+      <div class="section__header">
+        <p class="section__label">How it works</p>
+        <h2 class="section__title">セッションの流れ</h2>
+        <div class="section__rule"></div>
+      </div>
+      <div class="flow__steps">
+        <div class="step">
+          <div class="step__num-wrap">
+            <div class="step__num">01</div>
+            <div class="step__line"></div>
+          </div>
+          <div class="step__content">
+            <h3 class="step__title">お申し込み・無料相談</h3>
+            <p class="step__text">
+              フォームからお申し込みください。最初の30分は無料の事前相談として、
+              どのような問いや悩みを抱えているかをお聞きします。
+              この場でカウンセリングを進めるかどうかを一緒に判断します。
+            </p>
+            <p class="step__meta">所要時間：30分 / オンライン（Zoom）/ 無料</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step__num-wrap">
+            <div class="step__num">02</div>
+            <div class="step__line"></div>
+          </div>
+          <div class="step__content">
+            <h3 class="step__title">哲学対話セッション</h3>
+            <p class="step__text">
+              60〜90分の対話セッションです。あなたが持ち込むテーマは何でも構いません。
+              「生きる意味がわからない」「人間関係で悩んでいる」「重大な決断を迫られている」——
+              どのような問いも、哲学的思考の土台の上で見つめ直すことができます。
+            </p>
+            <p class="step__meta">所要時間：60〜90分 / オンライン（Zoom）/ ¥8,000〜</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step__num-wrap">
+            <div class="step__num">03</div>
+          </div>
+          <div class="step__content">
+            <h3 class="step__title">継続・振り返り</h3>
+            <p class="step__text">
+              一度のセッションで完結することもありますが、継続的な対話を希望される方には
+              定期セッションのプランもご用意しています。
+              思考は一夜にして深まるものではありません。問い続けることが、哲学です。
+            </p>
+            <p class="step__meta">月2〜4回 / 継続プランあり</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section faq" id="faq">
+    <div class="container container--narrow">
+      <div class="section__header">
+        <p class="section__label">FAQ</p>
+        <h2 class="section__title">よくある質問</h2>
+        <div class="section__rule"></div>
+      </div>
+      <div class="faq__list">
+        <details class="faq__item">
+          <summary class="faq__q">哲学の知識がなくても受けられますか？</summary>
+          <div class="faq__a">
+            <p>はい、むしろ哲学を学んだことのない方を歓迎しています。「哲学的に考える」とは特別な知識を持つことではなく、問いを丁寧に扱う態度のことです。専門用語を使う必要は一切ありません。</p>
+          </div>
+        </details>
+        <details class="faq__item">
+          <summary class="faq__q">心理カウンセリングや療法との違いは？</summary>
+          <div class="faq__a">
+            <p>心理カウンセリングは感情や心理的な問題の回復を主な目的としますが、哲学カウンセリングは思考そのものを扱います。精神的な症状や診断の必要がある方は、専門の医療機関をお勧めします。哲学カウンセリングは、人生の問いや価値観、意味の探求に向いています。</p>
+          </div>
+        </details>
+        <details class="faq__item">
+          <summary class="faq__q">どんな問いや悩みでも持ち込めますか？</summary>
+          <div class="faq__a">
+            <p>基本的には何でも持ち込んでいただけます。「仕事を続けるべきか」「家族との関係に納得できない」「死ぬことが怖い」「自分が何者かわからない」——大きな問いも、日常の小さな違和感も、哲学的思考の入口になります。</p>
+          </div>
+        </details>
+        <details class="faq__item">
+          <summary class="faq__q">答えを出してもらえますか？</summary>
+          <div class="faq__a">
+            <p>答えを提供することはしません。哲学カウンセリングの目的は、あなたが自分自身の答えを見つけていく力を育てることです。ただし、思考の整理や問いの構造化を通じて、自分の立場が明確になることはよくあります。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact / Booking -->
+  <section class="section contact" id="contact">
+    <div class="contact__geo">
+      <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="0,0 800,0 800,600" fill="none" stroke="rgba(180,150,80,0.10)" stroke-width="1"/>
+        <polygon points="0,0 600,0 0,400" fill="none" stroke="rgba(180,150,80,0.07)" stroke-width="1"/>
+        <line x1="0" y1="150" x2="800" y2="150" stroke="rgba(180,150,80,0.05)" stroke-width="1"/>
+        <line x1="0" y1="300" x2="800" y2="300" stroke="rgba(180,150,80,0.05)" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="container container--narrow">
+      <div class="section__header">
+        <p class="section__label">Contact</p>
+        <h2 class="section__title">お申し込み・お問い合わせ</h2>
+        <div class="section__rule"></div>
+        <p class="section__desc">
+          まずは無料の事前相談から。<br/>
+          どんな小さな問いでも、ためらわずにお送りください。
+        </p>
+      </div>
+
+      <!-- Contact method toggle -->
+      <div class="contact__tabs" role="tablist">
+        <button class="contact__tab contact__tab--active" role="tab" aria-selected="true" data-tab="line">
+          <svg class="contact__tab-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 2C6.48 2 2 5.97 2 10.83c0 2.97 1.61 5.61 4.12 7.3-.18.63-.66 2.28-.76 2.64-.12.44.16.44.34.32.14-.09 2.22-1.5 3.12-2.11.38.05.77.08 1.18.08 5.52 0 10-3.97 10-8.83S17.52 2 12 2z" fill="currentColor"/>
+          </svg>
+          LINEで送る
+        </button>
+        <button class="contact__tab" role="tab" aria-selected="false" data-tab="form">
+          <svg class="contact__tab-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
+          </svg>
+          フォームで送る
+        </button>
+      </div>
+
+      <!-- LINE panel -->
+      <div class="contact__panel" id="panel-line">
+        <div class="line-panel">
+          <div class="line-panel__icon">
+            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="24" cy="24" r="24" fill="#06C755"/>
+              <path d="M38 22.3C38 15.5 31.3 10 23 10S8 15.5 8 22.3c0 6.1 5.4 11.2 12.7 12.2.5.1 1.2.3 1.3.8.1.4 0 1.1 0 1.5l-.2 1.1c-.1.4-.4 1.6 1.4.9 1.8-.7 9.7-5.7 13.2-9.8C38 26.9 38 24.6 38 22.3z" fill="white"/>
+              <path d="M32.3 25.6h-4.7c-.2 0-.3-.1-.3-.3v-7.2c0-.2.1-.3.3-.3h4.7c.2 0 .3.1.3.3v1.2c0 .2-.1.3-.3.3h-3.2v1.2h3.2c.2 0 .3.1.3.3v1.2c0 .2-.1.3-.3.3h-3.2v1.2h3.2c.2 0 .3.1.3.3v1.2c0 .2-.1.3-.3.3zm-6.7 0h-1.2c-.2 0-.3-.1-.3-.3v-7.2c0-.2.1-.3.3-.3h1.2c.2 0 .3.1.3.3v7.2c0 .2-.1.3-.3.3zm-2.5 0h-4.7c-.2 0-.3-.1-.3-.3v-7.2c0-.2.1-.3.3-.3h1.2c.2 0 .3.1.3.3v5.7h3.2c.2 0 .3.1.3.3v1.2c0 .2-.1.3-.3.3zm-6.8-6h-1.2v5.7h1.2v-5.7zm-.6-2c-.5 0-.9.4-.9.9s.4.9.9.9.9-.4.9-.9-.4-.9-.9-.9z" fill="#06C755"/>
+            </svg>
+          </div>
+          <div class="line-panel__body">
+            <h3 class="line-panel__title">LINEで気軽に問い合わせる</h3>
+            <p class="line-panel__desc">
+              LINEの方が返信が早く、気軽にやりとりできます。<br/>
+              「無料相談を希望します」と一言送るだけで大丈夫です。
+            </p>
+            <!-- LINE公式アカウント開設後、href を実際のURLに変更してください -->
+            <a class="btn btn--line" href="https://line.me/ti/p/~abatya0809" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="20" height="20">
+                <path d="M12 2C6.48 2 2 5.97 2 10.83c0 2.97 1.61 5.61 4.12 7.3-.18.63-.66 2.28-.76 2.64-.12.44.16.44.34.32.14-.09 2.22-1.5 3.12-2.11.38.05.77.08 1.18.08 5.52 0 10-3.97 10-8.83S17.52 2 12 2z" fill="white"/>
+              </svg>
+              LINE公式アカウントを友だち追加
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form panel -->
+      <div class="contact__panel contact__panel--hidden" id="panel-form">
+      <form class="form" id="contactForm" novalidate>
+        <div class="form__row">
+          <div class="form__group">
+            <label class="form__label" for="name">お名前 <span class="form__req">*</span></label>
+            <input class="form__input" type="text" id="name" name="name" placeholder="木下 太郎" required />
+          </div>
+          <div class="form__group">
+            <label class="form__label" for="email">メールアドレス <span class="form__req">*</span></label>
+            <input class="form__input" type="email" id="email" name="email" placeholder="example@email.com" required />
+          </div>
+        </div>
+        <div class="form__group">
+          <label class="form__label" for="type">ご希望の内容</label>
+          <select class="form__select" id="type" name="type">
+            <option value="">選択してください</option>
+            <option value="free">無料事前相談（30分）</option>
+            <option value="single">単発セッション（60〜90分）</option>
+            <option value="monthly">定期セッション（月2〜4回）</option>
+            <option value="other">その他・まずは質問したい</option>
+          </select>
+        </div>
+        <div class="form__group">
+          <label class="form__label" for="message">お持ちの問い・ご相談内容 <span class="form__req">*</span></label>
+          <textarea class="form__textarea" id="message" name="message" rows="5" placeholder="今どんなことで悩んでいるか、どんな問いを抱えているか、ざっくりと書いていただければ結構です。" required></textarea>
+        </div>
+        <div class="form__group form__group--check">
+          <label class="form__checkbox">
+            <input type="checkbox" id="agree" name="agree" required />
+            <span class="form__checkbox-mark"></span>
+            <span>プライバシーポリシーに同意します</span>
+          </label>
+        </div>
+        <button class="btn btn--primary btn--full" type="submit">送信する</button>
+        <p class="form__note">※ 2〜3営業日以内にご返信いたします。</p>
+      </form>
+      <div class="form__success" id="formSuccess" aria-live="polite" hidden>
+        <div class="form__success-icon">◇</div>
+        <h3>送信が完了しました</h3>
+        <p>お問い合わせありがとうございます。<br/>2〜3営業日以内にメールにてご返信いたします。</p>
+      </div>
+      </div><!-- /panel-form -->
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer__geo">
+      <svg viewBox="0 0 1200 200" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="0,200 600,0 1200,200" fill="none" stroke="rgba(180,150,80,0.10)" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__brand">
+          <p class="footer__name">木下大志郎</p>
+          <p class="footer__tagline">哲学カウンセリング</p>
+        </div>
+        <nav class="footer__nav">
+          <a href="#about">について</a>
+          <a href="#what">哲学カウンセリングとは</a>
+          <a href="#flow">セッションの流れ</a>
+          <a href="#faq">FAQ</a>
+          <a href="#contact">お申し込み</a>
+        </nav>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copy">&copy; 2026 木下大志郎. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
