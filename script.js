@@ -23,7 +23,7 @@ tabs.forEach(tab => {
 // ==========================================
 // 手順: https://formspree.io でアカウント作成 → 新規フォーム作成 →
 // 発行されたエンドポイント URL（例: https://formspree.io/f/xpzgkdvw）を下記に貼り付ける
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xvzllbwq';
 
 const form = document.getElementById('contactForm');
 const successBox = document.getElementById('formSuccess');
