@@ -481,6 +481,13 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   justify-content: center;
 }
+.about__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
 .about__initials {
   font-size: 4rem;
   color: var(--gold-dk);
