@@ -1256,6 +1256,12 @@ details[open] .faq__q::after {
   font-style: italic;
   padding-left: 16px;
   border-left: 2px solid var(--gold-dk);
+  margin-bottom: 28px;
+}
+
+.books__actions {
+  display: flex;
+  gap: 12px;
 }
 
 @media (max-width: 760px) {
