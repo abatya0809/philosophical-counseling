@@ -23,12 +23,12 @@ tabs.forEach(tab => {
 // ==========================================
 // 手順: https://formspree.io でアカウント作成 → 新規フォーム作成 →
 // 発行されたエンドポイント URL（例: https://formspree.io/f/xpzgkdvw）を下記に貼り付ける
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xvzllbwq';
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
 
 const form = document.getElementById('contactForm');
 const successBox = document.getElementById('formSuccess');
 
-form.addEventListener('submit', async e => {
+if (form) form.addEventListener('submit', async e => {
   e.preventDefault();
   if (!form.checkValidity()) {
     form.reportValidity();
