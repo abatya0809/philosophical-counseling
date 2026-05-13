@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ブログ | 木下大志郎</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="blog.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600;700&family=Shippori+Mincho:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a class="nav__logo" href="index.html">木下大志郎</a>
+  <ul class="nav__links">
+    <li><a href="index.html#about">について</a></li>
+    <li><a href="index.html#what">哲学カウンセリングとは</a></li>
+    <li><a href="index.html#flow">セッションの流れ</a></li>
+    <li><a href="blog.html">ブログ</a></li>
+    <li><a href="index.html#contact" class="nav__cta">お申し込み</a></li>
+  </ul>
+  <button class="nav__hamburger" aria-label="メニューを開く">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<main>
+  <section class="blog-hero">
+    <div class="blog-hero__geo">
+      <svg viewBox="0 0 1200 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(180,150,80,0.06)" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+        <polygon points="0,500 500,100 1000,500" fill="none" stroke="rgba(180,150,80,0.10)" stroke-width="1.5"/>
+        <polygon points="200,500 700,0 1200,500" fill="none" stroke="rgba(180,150,80,0.07)" stroke-width="1"/>
+        <circle cx="1000" cy="150" r="150" fill="none" stroke="rgba(180,150,80,0.06)" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="container">
+      <p class="section__label">Blog</p>
+      <h1 class="blog-hero__title">哲学ブログ</h1>
+      <div class="section__rule"></div>
+      <p class="section__desc">問いを持ち続けることの記録。<br/>哲学的考察とカウンセリングの現場から。</p>
+    </div>
+  </section>
+
+  <section class="section blog-list">
+    <div class="container">
+      <div class="blog-grid">
+    <a class="post-card" href="blog-35fc6c0b7c16807daa62f444d56f3025.html">
+      <div class="post-card__meta">
+        <span class="post-card__cat">哲学的考察</span>
+        <span class="post-card__date">2026年5月13日</span>
+      </div>
+      <h2 class="post-card__title">無題</h2>
+      <p class="post-card__excerpt">哲学とは問うことそのものである。答えを求める前に、まず問いの形を確かめることが大切だ。</p>
+      <span class="post-card__read">続きを読む →</span>
+    </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer__geo">
+    <svg viewBox="0 0 1200 200" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="0,200 600,0 1200,200" fill="none" stroke="rgba(180,150,80,0.10)" stroke-width="1"/>
+    </svg>
+  </div>
+  <div class="container">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <p class="footer__name">木下大志郎</p>
+        <p class="footer__tagline">哲学カウンセリング</p>
+      </div>
+      <nav class="footer__nav">
+        <a href="index.html#about">について</a>
+        <a href="index.html#what">哲学カウンセリングとは</a>
+        <a href="index.html#flow">セッションの流れ</a>
+        <a href="blog.html">ブログ</a>
+        <a href="index.html#contact">お申し込み</a>
+      </nav>
+    </div>
+    <div class="footer__bottom">
+      <p class="footer__copy">&copy; 2026 木下大志郎. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+<script src="script.js"></script>
+</body>
+</html>
