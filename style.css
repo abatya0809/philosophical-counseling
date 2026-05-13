@@ -1111,6 +1111,88 @@ details[open] .faq__q::after {
 }
 
 /* ==========================================
+   Books section
+   ========================================== */
+.books { background: var(--bg-2); }
+
+.books__inner {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 72px;
+  align-items: center;
+}
+
+.books__cover-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.books__cover {
+  width: 260px;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 1;
+  box-shadow: 8px 12px 40px rgba(0,0,0,0.6);
+}
+
+.books__cover-shadow {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: -16px;
+  bottom: -16px;
+  border: 1px solid var(--border);
+  z-index: 0;
+}
+
+.books__label {
+  font-family: var(--ff-en);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 14px;
+}
+
+.books__title {
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.books__desc {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 2.1;
+  letter-spacing: 0.04em;
+  margin-bottom: 28px;
+}
+
+.books__read {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+  font-style: italic;
+  padding-left: 16px;
+  border-left: 2px solid var(--gold-dk);
+}
+
+@media (max-width: 760px) {
+  .books__inner {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .books__cover {
+    width: 180px;
+    margin: 0 auto;
+  }
+}
+
+/* ==========================================
    Privacy Policy page
    ========================================== */
 .privacy {
