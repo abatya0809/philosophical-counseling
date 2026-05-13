@@ -272,7 +272,6 @@ async function main() {
   do {
     const body = {
       filter: { property: '公開', checkbox: { equals: true } },
-      sorts: [{ property: '日付', direction: 'descending' }],
     };
     if (cursor) body.start_cursor = cursor;
 
@@ -280,6 +279,12 @@ async function main() {
     allPages = allPages.concat(result.results);
     cursor = result.has_more ? result.next_cursor : undefined;
   } while (cursor);
+
+  allPages.sort((a, b) => {
+    const da = a.properties.日付?.date?.start || '';
+    const db = b.properties.日付?.date?.start || '';
+    return db.localeCompare(da);
+  });
 
   console.log(`${allPages.length}件の公開記事を取得しました`);
 
