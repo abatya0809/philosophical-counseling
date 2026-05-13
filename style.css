@@ -1111,6 +1111,83 @@ details[open] .faq__q::after {
 }
 
 /* ==========================================
+   Voices section
+   ========================================== */
+.voices { background: var(--bg); }
+
+.voices__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.voice {
+  padding: 32px 28px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.voice__meta {
+  font-family: var(--ff-en);
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.voice__flow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.voice__block {
+  padding: 14px 16px;
+  border-left: 2px solid var(--border);
+}
+.voice__block--before { border-left-color: var(--text-dim); }
+.voice__block--after  { border-left-color: var(--gold); }
+
+.voice__tag {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  margin-bottom: 6px;
+}
+.voice__block--before .voice__tag { color: var(--text-dim); }
+.voice__block--after  .voice__tag { color: var(--gold); }
+
+.voice__q {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.8;
+  letter-spacing: 0.04em;
+}
+
+.voice__arrow {
+  text-align: center;
+  color: var(--gold-dk);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.voice__comment {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 2;
+  letter-spacing: 0.04em;
+  padding-top: 4px;
+  border-top: 1px solid var(--border-lt);
+}
+
+@media (max-width: 900px) {
+  .voices__grid { grid-template-columns: 1fr; }
+}
+
+/* ==========================================
    Books section
    ========================================== */
 .books { background: var(--bg-2); }
