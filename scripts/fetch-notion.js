@@ -292,7 +292,8 @@ async function main() {
   const postFiles = new Map();
 
   for (const page of allPages) {
-    const title    = page.properties.Title?.title?.[0]?.plain_text || '無題';
+    const titleProp = Object.values(page.properties).find(p => p.type === 'title');
+    const title    = titleProp?.title?.[0]?.plain_text || '無題';
     const category = page.properties.カテゴリ?.select?.name || '';
     const date     = page.properties.日付?.date?.start || '';
     const id       = page.id.replace(/-/g, '');
