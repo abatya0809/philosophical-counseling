@@ -842,6 +842,18 @@ details[open] .faq__q::after {
   flex-shrink: 0;
 }
 
+.contact__tab-line-badge {
+  background: #06C755;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  font-family: sans-serif;
+}
+
 /* Panels */
 .contact__panel { display: block; }
 .contact__panel--hidden { display: none; }
