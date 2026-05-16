@@ -873,7 +873,21 @@ details[open] .faq__q::after {
   width: 72px;
   height: 72px;
 }
-.line-panel__icon svg { width: 100%; height: 100%; }
+
+.line-icon-badge {
+  width: 72px;
+  height: 72px;
+  background: #06C755;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+  font-weight: 900;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  color: #fff;
+}
 
 .line-panel__body { flex: 1; }
 
