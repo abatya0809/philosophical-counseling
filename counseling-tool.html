@@ -364,6 +364,62 @@
     .session-tag { font-size: 0.68rem; padding: 2px 8px; border: 1px solid var(--border-dk); border-radius: 999px; color: var(--text-3); }
     .session-count { font-size: 0.72rem; color: var(--text-3); margin-top: 6px; }
 
+    /* ── Client detail tabs ── */
+    .cd-tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 0; }
+    .cd-tab {
+      padding: 8px 18px; font-size: 0.82rem; font-weight: 700;
+      border: none; background: none; cursor: pointer; font-family: var(--ff);
+      color: var(--text-3); border-bottom: 2px solid transparent; margin-bottom: -2px;
+      transition: all 0.15s;
+    }
+    .cd-tab:hover { color: var(--accent); }
+    .cd-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .cd-panel { display: none; }
+    .cd-panel.active { display: block; }
+
+    /* ── Theme timeline ── */
+    .timeline-row {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+    }
+    .timeline-row:last-child { border-bottom: none; }
+    .timeline-dot {
+      width: 10px; height: 10px; border-radius: 999px;
+      background: var(--accent); flex-shrink: 0; margin-top: 6px;
+      position: relative;
+    }
+    .timeline-dot::after {
+      content: ''; position: absolute; top: 10px; left: 4px;
+      width: 2px; height: 100vh; background: var(--border);
+    }
+    .timeline-row:last-child .timeline-dot::after { display: none; }
+    .timeline-body { flex: 1; min-width: 0; }
+    .timeline-date { font-size: 0.72rem; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .timeline-concern { font-size: 0.82rem; color: var(--text-2); line-height: 1.6; margin-bottom: 8px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .timeline-themes { display: flex; flex-wrap: wrap; gap: 5px; }
+    .timeline-theme {
+      font-size: 0.68rem; padding: 2px 10px; border-radius: 999px; font-weight: 700;
+    }
+    .theme-new      { background: var(--accent); color: #fff; }
+    .theme-recurring{ background: var(--amber-lt); color: var(--amber); border: 1px solid #d97706; }
+    .theme-faded    { background: var(--surface-2); color: var(--text-3); border: 1px solid var(--border); }
+
+    /* ── Theme frequency chart ── */
+    .freq-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .freq-label { font-size: 0.78rem; color: var(--text-2); width: 90px; flex-shrink: 0; text-align: right; }
+    .freq-bar-wrap { flex: 1; background: var(--surface-2); border-radius: 999px; height: 14px; overflow: hidden; }
+    .freq-bar { height: 100%; border-radius: 999px; background: var(--accent); transition: width 0.6s ease; }
+    .freq-count { font-size: 0.72rem; color: var(--text-3); width: 28px; }
+
+    /* ── AI insight ── */
+    .insight-box {
+      background: var(--accent-lt); border: 1px solid #86efac;
+      border-radius: var(--radius); padding: 16px 20px;
+      font-size: 0.85rem; line-height: 1.8; color: var(--text-2);
+      white-space: pre-wrap; margin-top: 14px;
+    }
+
     /* ── Empty state ── */
     .empty { text-align: center; padding: 60px 20px; color: var(--text-3); }
     .empty-icon { font-size: 2rem; margin-bottom: 12px; }
@@ -614,16 +670,38 @@
 
 <!-- ══ クライアント詳細モーダル ══ -->
 <div class="overlay" id="clientDetailOverlay">
-  <div class="modal" style="max-width:700px">
+  <div class="modal" style="max-width:720px">
     <div class="detail-header">
       <div>
-        <div class="detail-date" id="cdClientName" style="font-size:1rem;font-weight:700;color:var(--text)"></div>
+        <div id="cdClientName" style="font-size:1rem;font-weight:700;color:var(--text)"></div>
         <div id="cdClientNote" style="font-size:0.78rem;color:var(--text-3);margin-top:2px"></div>
       </div>
       <button class="btn" id="cdClose">閉じる</button>
     </div>
-    <div class="sec-head" style="margin-bottom:12px">セッション履歴</div>
-    <div id="cdSessionList"></div>
+
+    <div class="cd-tabs">
+      <button class="cd-tab active" data-cdtab="history">セッション履歴</button>
+      <button class="cd-tab" data-cdtab="evolution">テーマの変化</button>
+    </div>
+
+    <div class="cd-panel active" id="cdpanel-history">
+      <div id="cdSessionList"></div>
+    </div>
+
+    <div class="cd-panel" id="cdpanel-evolution">
+      <div class="sec-head" style="margin-bottom:14px">テーマ頻度</div>
+      <div id="cdFreqChart" style="margin-bottom:28px"></div>
+
+      <div class="sec-head" style="margin-bottom:14px">セッションの流れ</div>
+      <div id="cdTimeline"></div>
+
+      <div id="cdInsightSection" style="margin-top:24px">
+        <div class="sec-head" style="margin-bottom:10px">AI による洞察</div>
+        <p class="field-note" style="margin-bottom:10px">全セッションを読んで、このクライアントの哲学的探求の変化をまとめます。</p>
+        <button class="btn blue" id="cdInsightBtn">洞察を生成する</button>
+        <div id="cdInsightBox" style="display:none"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1286,25 +1364,158 @@ function renderClients() {
 function openClientDetail(client) {
   document.getElementById('cdClientName').textContent = client.name;
   document.getElementById('cdClientNote').textContent = client.notes || '';
-  const sessions = store.getSessions().filter(s => String(s.clientId) === String(client.id));
+
+  // タブリセット
+  document.querySelectorAll('.cd-tab').forEach(t => t.classList.toggle('active', t.dataset.cdtab === 'history'));
+  document.querySelectorAll('.cd-panel').forEach(p => p.classList.toggle('active', p.id === 'cdpanel-history'));
+  document.getElementById('cdInsightBox').style.display = 'none';
+  document.getElementById('cdInsightBox').innerHTML = '';
+
+  const sessions = store.getSessions()
+    .filter(s => String(s.clientId) === String(client.id))
+    .sort((a, b) => new Date(a.date) - new Date(b.date)); // 古い順
+
+  // ── セッション履歴タブ ──
   const sl = document.getElementById('cdSessionList');
   sl.innerHTML = '';
   if (!sessions.length) {
     sl.innerHTML = `<div class="empty" style="padding:32px"><p>セッション記録がありません</p></div>`;
   } else {
-    sessions.forEach(s => {
+    [...sessions].reverse().forEach(s => {
       const card = document.createElement('div');
       card.className = 'session-card';
+      const themeTags = s.themes.map(t => `<span class="session-tag">${THEME_NAMES[t]||t}</span>`).join('');
       card.innerHTML = `
-        <div class="session-date">${new Date(s.date).toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric',weekday:'short'})}</div>
-        <div class="session-concern">${s.concern || '（記録なし）'}</div>
+        <div class="session-date">${new Date(s.date).toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'})}</div>
+        <div class="session-concern">${s.concern||'（記録なし）'}</div>
+        <div class="session-tags" style="margin-top:6px">${themeTags}</div>
         <div class="session-count">問い ${s.questions.length}件</div>
       `;
       card.addEventListener('click', () => openDetail(s));
       sl.appendChild(card);
     });
   }
+
+  // ── テーマの変化タブ ──
+  renderEvolution(sessions);
+
+  // AI洞察ボタン
+  document.getElementById('cdInsightBtn').onclick = () => generateInsight(client, sessions);
+
   document.getElementById('clientDetailOverlay').classList.add('open');
+}
+
+// タブ切り替え
+document.querySelectorAll('.cd-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cd-tab').forEach(t => t.classList.toggle('active', t === btn));
+    document.querySelectorAll('.cd-panel').forEach(p => p.classList.toggle('active', p.id === `cdpanel-${btn.dataset.cdtab}`));
+  });
+});
+
+function renderEvolution(sessions) {
+  // テーマ頻度集計
+  const freq = {};
+  sessions.forEach(s => s.themes.forEach(t => { freq[t] = (freq[t]||0) + 1; }));
+  const maxFreq = Math.max(...Object.values(freq), 1);
+  const sorted = Object.entries(freq).sort((a,b) => b[1]-a[1]);
+
+  const chart = document.getElementById('cdFreqChart');
+  chart.innerHTML = '';
+  if (!sorted.length) {
+    chart.innerHTML = '<p class="field-note">データがありません</p>';
+  } else {
+    sorted.forEach(([theme, count]) => {
+      const row = document.createElement('div');
+      row.className = 'freq-row';
+      row.innerHTML = `
+        <div class="freq-label">${THEME_NAMES[theme]||theme}</div>
+        <div class="freq-bar-wrap">
+          <div class="freq-bar" style="width:${Math.round(count/maxFreq*100)}%"></div>
+        </div>
+        <div class="freq-count">${count}回</div>
+      `;
+      chart.appendChild(row);
+    });
+  }
+
+  // タイムライン（古い順）
+  const timeline = document.getElementById('cdTimeline');
+  timeline.innerHTML = '';
+  if (!sessions.length) {
+    timeline.innerHTML = '<p class="field-note">セッション記録がありません</p>';
+    return;
+  }
+
+  const seenThemes = new Set();
+  sessions.forEach(s => {
+    const row = document.createElement('div');
+    row.className = 'timeline-row';
+    const themeTags = s.themes.map(t => {
+      const isNew = !seenThemes.has(t);
+      const cls = isNew ? 'theme-new' : 'theme-recurring';
+      const label = (THEME_NAMES[t]||t) + (isNew ? ' ★' : '');
+      return `<span class="timeline-theme ${cls}">${label}</span>`;
+    }).join('');
+    s.themes.forEach(t => seenThemes.add(t));
+
+    row.innerHTML = `
+      <div class="timeline-dot"></div>
+      <div class="timeline-body">
+        <div class="timeline-date">${new Date(s.date).toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'})}</div>
+        <div class="timeline-concern">${s.concern||'（記録なし）'}</div>
+        <div class="timeline-themes">${themeTags}</div>
+      </div>
+    `;
+    timeline.appendChild(row);
+  });
+}
+
+async function generateInsight(client, sessions) {
+  const apiKey = localStorage.getItem('philo_api_key') || '';
+  if (!apiKey) { alert('AI洞察にはAPIキーが必要です。'); return; }
+  if (sessions.length < 2) { alert('洞察には2回以上のセッション記録が必要です。'); return; }
+
+  const btn = document.getElementById('cdInsightBtn');
+  btn.textContent = '生成中…'; btn.disabled = true;
+
+  const context = sessions.map((s, i) => {
+    const date = new Date(s.date).toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
+    const themes = s.themes.map(t => THEME_NAMES[t]||t).join('、');
+    return `【第${i+1}回 ${date}】\nテーマ：${themes}\n語り：${s.concern||'記録なし'}\n${s.notes ? 'メモ：'+s.notes : ''}`;
+  }).join('\n\n');
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 600,
+        system: `あなたは哲学カウンセリングの記録を読む専門家です。複数回のセッション記録を受け取り、カウンセラー向けに以下を簡潔に日本語で分析してください：
+1. このクライアントの問いの変化・深まり（テーマの移行など）
+2. 繰り返し現れるパターンや言葉
+3. 次回のセッションで注目すべき点
+200字以内で、箇条書きではなく文章で書いてください。`,
+        messages: [{ role: 'user', content: `クライアント名：${client.name}\n\n${context}` }],
+      }),
+    });
+    if (!res.ok) throw new Error(`APIエラー (${res.status})`);
+    const data = await res.json();
+    const box = document.getElementById('cdInsightBox');
+    box.className = 'insight-box';
+    box.textContent = data.content[0].text.trim();
+    box.style.display = 'block';
+  } catch(e) {
+    alert(`エラー：${e.message}`);
+  } finally {
+    btn.textContent = '洞察を生成する'; btn.disabled = false;
+  }
 }
 
 document.getElementById('cdClose').addEventListener('click', () => document.getElementById('clientDetailOverlay').classList.remove('open'));
