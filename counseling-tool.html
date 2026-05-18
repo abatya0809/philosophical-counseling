@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>哲学的問い生成ツール</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #f4f3ef;
+      --surface:   #ffffff;
+      --surface-2: #f9f8f5;
+      --border:    #dddbd4;
+      --border-dk: #c8c5bc;
+      --text:      #1a1917;
+      --text-2:    #4a4845;
+      --text-3:    #7a7874;
+      --accent:    #2d6a4f;
+      --accent-lt: #e8f4ef;
+      --accent-dk: #1b4332;
+      --blue:      #1d4e89;
+      --blue-lt:   #e8f0fb;
+      --amber:     #b45309;
+      --amber-lt:  #fef3c7;
+      --red:       #991b1b;
+      --red-lt:    #fee2e2;
+      --radius:    6px;
+      --shadow:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+      --ff:        'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+    }
+
+    html { font-size: 15px; }
+    body { background: var(--bg); color: var(--text); font-family: var(--ff); line-height: 1.7; min-height: 100vh; }
+    ::selection { background: var(--accent-lt); }
+
+    /* ── Header ── */
+    .header {
+      background: var(--accent-dk);
+      color: #fff;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .header-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.05em; }
+    .header-sub { font-size: 0.75rem; opacity: 0.7; margin-top: 1px; }
+    .header-nav { margin-left: auto; display: flex; gap: 4px; }
+    .tab-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.8);
+      font-family: var(--ff);
+      font-size: 0.82rem;
+      padding: 6px 16px;
+      cursor: pointer;
+      border-radius: var(--radius);
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+    .tab-btn.active { background: rgba(255,255,255,0.95); color: var(--accent-dk); font-weight: 700; }
+
+    /* ── Layout ── */
+    .main { padding: 28px 32px; max-width: 860px; margin: 0 auto; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── Section heading ── */
+    .sec-head {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--accent);
+      display: inline-block;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    /* ── Client bar ── */
+    .client-bar {
+      background: var(--blue-lt);
+      border: 1px solid #b8cde8;
+      border-radius: var(--radius);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .client-bar-label { font-size: 0.82rem; font-weight: 700; color: var(--blue); white-space: nowrap; }
+    .client-select {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border-dk);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--ff);
+      font-size: 0.88rem;
+      padding: 7px 32px 7px 12px;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a7874'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      transition: border-color 0.15s;
+    }
+    .client-select:focus { border-color: var(--blue); outline: 2px solid rgba(29,78,137,0.2); }
+    .client-select option { background: #fff; }
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--blue);
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      font-family: var(--ff);
+      white-space: nowrap;
+    }
+    .link-btn:hover { color: var(--accent-dk); }
+
+    /* ── Textarea / Input ── */
+    textarea, input[type=text] {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border-dk);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--ff);
+      font-size: 0.92rem;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      line-height: 1.7;
+    }
+    textarea:focus, input[type=text]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(45,106,79,0.15);
+    }
+    textarea { resize: vertical; }
+    textarea::placeholder, input::placeholder { color: var(--text-3); }
+    .concern-textarea { min-height: 120px; }
+    label.field-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-2);
+      margin-bottom: 6px;
+    }
+    .field-note { font-size: 0.78rem; color: var(--text-3); margin-bottom: 8px; }
+
+    /* ── Theme tags ── */
+    .theme-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; align-items: center; }
+    .theme-row-label { font-size: 0.78rem; font-weight: 700; color: var(--text-2); margin-right: 2px; }
+    .theme-tag {
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      border: 1px solid var(--border-dk);
+      border-radius: 999px;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+      background: var(--surface);
+    }
+    .theme-tag:hover { border-color: var(--accent); color: var(--accent); }
+    .theme-tag.selected { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+
+    /* ── Primary button ── */
+    .btn-primary {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      font-family: var(--ff);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: 0.04em;
+    }
+    .btn-primary:hover { background: var(--accent-dk); }
+    .btn-primary:active { transform: scale(0.99); }
+
+    /* ── Secondary button ── */
+    .btn {
+      padding: 9px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border-dk);
+      border-radius: var(--radius);
+      color: var(--text-2);
+      font-family: var(--ff);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-weight: 500;
+    }
+    .btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
+    .btn.blue { border-color: #b8cde8; color: var(--blue); }
+    .btn.blue:hover { background: var(--blue-lt); border-color: var(--blue); }
+    .btn.danger { color: var(--red); border-color: #f5c6c6; }
+    .btn.danger:hover { background: var(--red-lt); border-color: var(--red); }
+
+    /* ── Questions ── */
+    .questions-block { display: none; margin-top: 24px; }
+    .questions-block.visible { display: block; }
+
+    .question-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+      animation: fadeUp 0.3s ease forwards;
+      opacity: 0;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    .q-meta { font-size: 0.7rem; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+    .q-text { font-size: 1rem; color: var(--text); line-height: 1.8; font-weight: 500; }
+    .q-sub { font-size: 0.75rem; color: var(--text-3); margin-top: 6px; }
+
+    /* Ref toggle */
+    .ref-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      color: var(--blue);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      margin-top: 10px;
+      font-family: var(--ff);
+      text-decoration: underline;
+    }
+    .ref-toggle:hover { color: var(--accent-dk); }
+    .ref-body {
+      display: none;
+      margin-top: 10px;
+      background: var(--blue-lt);
+      border: 1px solid #b8cde8;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+    }
+    .ref-body.open { display: block; }
+    .ref-who { font-size: 0.78rem; font-weight: 700; color: var(--blue); margin-bottom: 2px; }
+    .ref-concept { font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .ref-note { font-size: 0.8rem; color: var(--text-2); line-height: 1.65; }
+
+    /* Annotation */
+    .annot-row {
+      display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);
+    }
+    .annot-label { font-size: 0.72rem; font-weight: 700; color: var(--text-3); margin-right: 2px; }
+    .annot-tag {
+      font-size: 0.72rem; padding: 3px 10px;
+      border: 1px solid var(--border-dk); border-radius: 999px;
+      color: var(--text-2); cursor: pointer; transition: all 0.15s;
+      background: var(--surface); font-family: var(--ff);
+    }
+    .annot-tag:hover { border-color: var(--amber); color: var(--amber); }
+    .annot-tag.active { background: var(--amber); border-color: var(--amber); color: #fff; font-weight: 700; }
+    .annot-memo-btn {
+      font-size: 0.72rem; padding: 3px 10px;
+      border: 1px dashed var(--border-dk); border-radius: 999px;
+      color: var(--text-3); cursor: pointer; background: none;
+      font-family: var(--ff); transition: all 0.15s;
+    }
+    .annot-memo-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .annot-memo-area {
+      display: none; width: 100%; margin-top: 8px; min-height: 56px;
+      font-size: 0.82rem;
+    }
+    .annot-memo-area.open { display: block; }
+
+    /* ── Action row ── */
+    .action-row { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+    .action-row .btn { flex: 1; min-width: 120px; text-align: center; }
+
+    /* ── Divider ── */
+    .divider { border: none; border-top: 2px solid var(--border); margin: 24px 0; }
+
+    /* ── Client panel ── */
+    .client-add-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px 24px; box-shadow: var(--shadow); margin-bottom: 24px;
+    }
+    .client-form-row { display: flex; gap: 8px; margin-top: 10px; }
+    .client-form-row input { flex: 1; }
+    .client-note-input { margin-top: 8px; min-height: 60px; font-size: 0.85rem; }
+
+    .client-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px;
+      display: flex; align-items: center; gap: 14px;
+      box-shadow: var(--shadow); margin-bottom: 10px;
+      transition: box-shadow 0.15s;
+    }
+    .client-card:hover { box-shadow: var(--shadow-md); }
+    .client-avatar {
+      width: 42px; height: 42px; border-radius: 999px;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 700; flex-shrink: 0;
+    }
+    .client-body { flex: 1; min-width: 0; }
+    .client-name { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+    .client-note-text { font-size: 0.78rem; color: var(--text-3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .client-meta { font-size: 0.7rem; color: var(--text-3); margin-top: 4px; }
+    .client-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    /* ── History ── */
+    .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .filter-bar label { font-size: 0.82rem; font-weight: 700; color: var(--text-2); }
+    .filter-select {
+      background: var(--surface); border: 1px solid var(--border-dk);
+      border-radius: var(--radius); color: var(--text);
+      font-family: var(--ff); font-size: 0.82rem; padding: 6px 12px;
+      cursor: pointer; outline: none;
+    }
+    .filter-select:focus { border-color: var(--accent); }
+
+    .session-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px;
+      margin-bottom: 10px; cursor: pointer;
+      box-shadow: var(--shadow); transition: box-shadow 0.15s;
+    }
+    .session-card:hover { box-shadow: var(--shadow-md); }
+    .session-card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .session-date { font-size: 0.78rem; font-weight: 700; color: var(--accent); }
+    .session-client-label { font-size: 0.72rem; color: var(--blue); font-weight: 700; margin-top: 2px; }
+    .session-concern { font-size: 0.88rem; color: var(--text-2); line-height: 1.6;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .session-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+    .session-tag { font-size: 0.68rem; padding: 2px 8px; border: 1px solid var(--border-dk); border-radius: 999px; color: var(--text-3); }
+    .session-count { font-size: 0.72rem; color: var(--text-3); margin-top: 6px; }
+
+    /* ── Empty state ── */
+    .empty { text-align: center; padding: 60px 20px; color: var(--text-3); }
+    .empty-icon { font-size: 2rem; margin-bottom: 12px; }
+    .empty p { font-size: 0.88rem; }
+
+    /* ── Modal ── */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+      z-index: 200; display: none; align-items: center; justify-content: center;
+      padding: 24px; backdrop-filter: blur(2px);
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: var(--surface); border-radius: 8px;
+      max-width: 660px; width: 100%; max-height: 88vh; overflow-y: auto;
+      padding: 28px 32px; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+    .modal-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
+    .modal-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; flex-wrap: wrap; }
+    .report-preview {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px;
+      font-size: 0.85rem; line-height: 1.85; white-space: pre-wrap;
+      color: var(--text-2); margin-top: 16px; max-height: 260px; overflow-y: auto;
+    }
+
+    /* Detail modal */
+    .detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+    .detail-date { font-size: 0.78rem; font-weight: 700; color: var(--accent); }
+    .detail-client { font-size: 0.82rem; color: var(--blue); font-weight: 700; margin-top: 2px; }
+    .detail-concern {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent-dk); border-radius: var(--radius);
+      padding: 12px 16px; font-size: 0.88rem; line-height: 1.75; color: var(--text-2); margin-bottom: 20px;
+    }
+    .detail-report {
+      background: var(--amber-lt); border: 1px solid #d97706;
+      border-radius: var(--radius); padding: 14px 18px;
+      font-size: 0.85rem; line-height: 1.85; white-space: pre-wrap; color: var(--text-2); margin-top: 14px;
+    }
+
+    /* ── API settings ── */
+    .api-bar {
+      background: var(--amber-lt);
+      border: 1px solid #d97706;
+      border-radius: var(--radius);
+      padding: 12px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .api-bar-label { font-size: 0.78rem; font-weight: 700; color: var(--amber); white-space: nowrap; }
+    .api-bar input {
+      flex: 1; min-width: 200px;
+      background: var(--surface); border: 1px solid #d97706;
+      border-radius: var(--radius); color: var(--text);
+      font-family: var(--ff); font-size: 0.82rem; padding: 6px 12px;
+      outline: none; transition: box-shadow 0.15s;
+    }
+    .api-bar input:focus { box-shadow: 0 0 0 3px rgba(180,83,9,0.15); }
+    .api-bar-saved { font-size: 0.75rem; color: var(--accent); font-weight: 700; }
+    .api-bar-link { font-size: 0.72rem; color: var(--text-3); text-decoration: underline; cursor: pointer; background: none; border: none; font-family: var(--ff); }
+
+    /* ── Loading state ── */
+    .btn-primary.loading {
+      background: var(--accent-dk);
+      pointer-events: none;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .spinner {
+      width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── AI badge on question ── */
+    .ai-badge {
+      display: inline-block; font-size: 0.62rem; font-weight: 700;
+      background: var(--accent); color: #fff;
+      padding: 1px 7px; border-radius: 999px; margin-left: 8px;
+      vertical-align: middle; letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 600px) {
+      .header { padding: 12px 16px; }
+      .main { padding: 20px 16px; }
+      .action-row { flex-direction: column; }
+      .client-form-row { flex-direction: column; }
+      .modal { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div>
+    <div class="header-title">哲学的問い生成ツール</div>
+    <div class="header-sub">Philosophical Inquiry Generator</div>
+  </div>
+  <nav class="header-nav">
+    <button class="tab-btn active" data-tab="session">セッション</button>
+    <button class="tab-btn" data-tab="clients">クライアント</button>
+    <button class="tab-btn" data-tab="history">履歴</button>
+  </nav>
+</header>
+
+<main class="main">
+
+  <!-- ══ セッション ══ -->
+  <div class="panel active" id="panel-session">
+
+    <div class="api-bar" id="apiBar">
+      <span class="api-bar-label">Claude API キー</span>
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off">
+      <button class="btn" id="apiSaveBtn" style="white-space:nowrap">保存</button>
+      <span class="api-bar-saved" id="apiSavedMsg" style="display:none">✓ 設定済み</span>
+      <button class="api-bar-link" id="apiClearBtn" style="display:none">クリア</button>
+    </div>
+
+    <div class="client-bar">
+      <span class="client-bar-label">クライアント</span>
+      <select class="client-select" id="sessionClientSelect">
+        <option value="">（未選択）</option>
+      </select>
+      <button class="link-btn" id="quickNewClientBtn">＋ 新規登録</button>
+    </div>
+
+    <div class="card">
+      <label class="field-label">クライアントの悩み・語り</label>
+      <div class="field-note">内容を入力するとテーマが自動検出されます</div>
+      <textarea class="concern-textarea" id="concernInput" placeholder="例：仕事を続けるべきか迷っている。周囲の期待に応えようとするうちに、自分が何をしたいのかわからなくなってしまった。"></textarea>
+      <div class="theme-row">
+        <span class="theme-row-label">テーマ：</span>
+        <span class="theme-tag" data-theme="existence">存在・自己</span>
+        <span class="theme-tag" data-theme="relation">関係・他者</span>
+        <span class="theme-tag" data-theme="value">価値・意味</span>
+        <span class="theme-tag" data-theme="emotion">感情・苦しみ</span>
+        <span class="theme-tag" data-theme="choice">選択・決断</span>
+        <span class="theme-tag" data-theme="society">社会・規範</span>
+        <span class="theme-tag" data-theme="time">時間・死</span>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="generateBtn">問いを生成する</button>
+
+    <div class="questions-block" id="questionsBlock">
+      <hr class="divider">
+      <div class="sec-head" style="margin-bottom:16px">生成された問い</div>
+      <div id="questionsList"></div>
+      <div class="action-row">
+        <button class="btn" id="moreBtn">問いを追加する（+3）</button>
+        <button class="btn blue" id="reportBtn">レポートを作成</button>
+        <button class="btn blue" id="saveBtn">保存する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ クライアント ══ -->
+  <div class="panel" id="panel-clients">
+    <div class="sec-head" style="margin-bottom:16px">クライアント登録</div>
+    <div class="client-add-card">
+      <div class="field-note">プライバシーのためイニシャルや仮名での登録を推奨します</div>
+      <div class="client-form-row">
+        <input type="text" id="newClientName" placeholder="名前・イニシャル（例：A.K.、田中さん）" maxlength="40">
+        <button class="btn-primary" id="addClientBtn" style="width:auto;padding:9px 20px;font-size:0.85rem">登録</button>
+      </div>
+      <textarea class="client-note-input" id="newClientNote" placeholder="初回メモ（任意）：背景・関心・注意事項など"></textarea>
+    </div>
+
+    <div class="sec-head" style="margin-bottom:16px">登録クライアント一覧</div>
+    <div id="clientList"></div>
+  </div>
+
+  <!-- ══ 履歴 ══ -->
+  <div class="panel" id="panel-history">
+    <div class="sec-head" style="margin-bottom:16px">セッション記録</div>
+    <div class="filter-bar">
+      <label>絞り込み：</label>
+      <select class="filter-select" id="historyClientFilter">
+        <option value="">全クライアント</option>
+      </select>
+    </div>
+    <div id="historyList"></div>
+  </div>
+
+</main>
+
+<!-- ══ レポートモーダル ══ -->
+<div class="overlay" id="reportModal">
+  <div class="modal">
+    <div class="modal-title">セッションレポートを作成</div>
+
+    <label class="field-label">提示した問い・対話の流れ（自由記述）</label>
+    <div class="field-note">実際に使った問いや対話の展開を自由に記録してください</div>
+    <textarea id="reportQuestions" style="min-height:140px" placeholder="例：&#10;・「本当の自分とは何か」という問いから始めた&#10;・仕事と自己の関係について探った&#10;・「選ばなかった」と「選べなかった」の違いで沈黙があった"></textarea>
+
+    <label class="field-label" style="margin-top:16px">カウンセラー所見・次回への申し送り</label>
+    <textarea id="reportNotes" style="min-height:100px" placeholder="気づいたこと、クライアントの反応、次回に引き継ぎたいことなど"></textarea>
+
+    <label class="field-label" style="margin-top:16px">レポートプレビュー</label>
+    <div class="report-preview" id="reportPreview"></div>
+
+    <div class="modal-actions">
+      <button class="btn" id="reportCopyBtn">テキストをコピー</button>
+      <button class="btn blue" id="reportSaveBtn">保存して完了</button>
+      <button class="btn" id="reportCloseBtn">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ セッション詳細モーダル ══ -->
+<div class="overlay" id="detailOverlay">
+  <div class="modal" style="max-width:700px">
+    <div class="detail-header">
+      <div>
+        <div class="detail-date" id="detailDate"></div>
+        <div class="detail-client" id="detailClientName"></div>
+      </div>
+      <button class="btn" id="detailClose">閉じる</button>
+    </div>
+    <div class="sec-head" style="margin-bottom:10px">クライアントの悩み</div>
+    <div class="detail-concern" id="detailConcern"></div>
+    <div id="detailReportSection" style="display:none">
+      <div class="sec-head" style="margin-bottom:10px">セッションレポート</div>
+      <div class="detail-report" id="detailReport"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ クライアント詳細モーダル ══ -->
+<div class="overlay" id="clientDetailOverlay">
+  <div class="modal" style="max-width:700px">
+    <div class="detail-header">
+      <div>
+        <div class="detail-date" id="cdClientName" style="font-size:1rem;font-weight:700;color:var(--text)"></div>
+        <div id="cdClientNote" style="font-size:0.78rem;color:var(--text-3);margin-top:2px"></div>
+      </div>
+      <button class="btn" id="cdClose">閉じる</button>
+    </div>
+    <div class="sec-head" style="margin-bottom:12px">セッション履歴</div>
+    <div id="cdSessionList"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  問いデータベース
+// ══════════════════════════════════════════════
+const QUESTIONS = {
+  existence: [
+    { q:"「自分」という言葉を使うとき、あなたはいったい何を指しているのでしょうか？", sub:"自己の定義",
+      ref:{ who:"ロック / パーフィット", concept:"人格同一性", note:"ロックは意識の連続性を同一性の根拠とし、パーフィットはその連続性すら幻想に近いと論じた。" }},
+    { q:"もし周囲の人間関係がすべてなくなったとしたら、あなたはまだ「あなた」でしょうか？", sub:"アイデンティティの根拠",
+      ref:{ who:"サルトル / ヘーゲル", concept:"対他存在・承認", note:"サルトルは他者のまなざしが自己を規定すると論じ、ヘーゲルは承認の相互性を自己意識の条件とした。" }},
+    { q:"あなたが「本当の自分」と感じる瞬間は、どのような状況のときですか？", sub:"真正性",
+      ref:{ who:"ハイデガー", concept:"本来性（Eigentlichkeit）", note:"ハイデガーは「ひと（das Man）」の支配から脱した本来的な自己のあり方を問い続けた。" }},
+    { q:"あなたはこれまでの自分と、これからの自分を、同一の存在だと思いますか？", sub:"時間と自己",
+      ref:{ who:"パーフィット / ヘラクレイトス", concept:"人格の非同一性", note:"パーフィットは人格同一性の自明性を疑い、「私」という固定した主体の実在を問い直した。" }},
+    { q:"「自分らしくある」とは、あなたにとって何を意味しますか？", sub:"自己表現",
+      ref:{ who:"サルトル", concept:"実存は本質に先立つ", note:"サルトルは「実存は本質に先立つ」として、自己は与えられるのではなく自らが作るものだと説いた。" }},
+    { q:"もし他者の目がなければ、あなたはどのような人間でいたいと思いますか？", sub:"内なる自己",
+      ref:{ who:"サルトル / ルソー", concept:"他者のまなざしと自己", note:"サルトルの『出口なし』に登場する「地獄とは他者のことだ」への問い返し。" }},
+  ],
+  relation: [
+    { q:"あなたにとって「孤独」と「ひとりでいること」は、同じことですか？", sub:"孤独の本質",
+      ref:{ who:"アーレント / ティリッヒ", concept:"孤独と孤立の区別", note:"アーレントはsolitude（自己との対話）とloneliness（孤立）を明確に区別した。" }},
+    { q:"他者にわかってもらいたいと思うとき、あなたは具体的に何をわかってほしいのですか？", sub:"承認と理解",
+      ref:{ who:"ヘーゲル / ブーバー", concept:"承認論・I-Thou", note:"ヘーゲルの主人と奴隷の弁証法は、承認をめぐる関係論の哲学的原型として機能する。" }},
+    { q:"誰かを愛するとはどういうことか、あなたなりに説明できますか？", sub:"愛の定義",
+      ref:{ who:"フロム / プラトン", concept:"愛するという技術・エロス", note:"フロムは愛を感情ではなく「意志と実践の技術」として定義し、能動性を強調した。" }},
+    { q:"他者への期待と、他者からの期待、あなたはどちらにより苦しめられていますか？", sub:"期待の構造",
+      ref:{ who:"サルトル / ヘーゲル", concept:"まなざし・承認欲望", note:"承認を求めることは同時に相手への依存を生む。ヘーゲルの承認論における逆説。" }},
+    { q:"あなたが「つながっている」と感じる関係と、そうでない関係の違いはどこにありますか？", sub:"関係の質",
+      ref:{ who:"ブーバー", concept:"I-Thou / I-It", note:"ブーバーは相手を主体として向き合う「我と汝」と、対象として扱う「我とそれ」を区別した。" }},
+    { q:"他者と自分の境界線は、あなたにとってどこに引かれていますか？", sub:"境界と自律",
+      ref:{ who:"レヴィナス", concept:"他者の顔・他者性", note:"レヴィナスは他者の顔が私に語りかけ、無限の責任を要求すると論じた。" }},
+  ],
+  value: [
+    { q:"あなたが「これは意味がある」と感じるとき、その意味はどこからやってきていますか？", sub:"意味の源泉",
+      ref:{ who:"フランクル / カミュ", concept:"ロゴテラピー・不条理", note:"フランクルは苦しみの中にさえ意味は見出せると説き、カミュは意味の不在（不条理）から始めた。" }},
+    { q:"人生に意味がなければならないと、あなたはなぜ思うのですか？", sub:"意味の必要性",
+      ref:{ who:"カミュ / ニーチェ", concept:"不条理・ニヒリズム", note:"カミュは意味なき世界に向き合いながらもなお生きることを選ぶ「反抗」を提唱した。" }},
+    { q:"あなたが最も大切にしていると思っているものを、実際の行動は反映していますか？", sub:"価値と行為の一致",
+      ref:{ who:"アリストテレス", concept:"実践知（フロネーシス）", note:"アリストテレスの「実践的知恵」は、状況の中で適切に価値を行為に翻訳する能力を指す。" }},
+    { q:"「よく生きる」とは何か、あなたは自分なりの答えを持っていますか？", sub:"善き生",
+      ref:{ who:"アリストテレス / プラトン", concept:"エウダイモニア（幸福）", note:"アリストテレスは幸福を快楽ではなく「徳に従った魂の活動」として定義した。" }},
+    { q:"何かが「大切だ」と感じるとき、その感覚の根拠はどこにあると思いますか？", sub:"価値の正当化",
+      ref:{ who:"ヒューム / カント", concept:"価値の感情説・道徳法則", note:"ヒュームは価値の根拠を感情に、カントは普遍化できる理性的義務に求めた。" }},
+    { q:"あなたは何のために生きているか、と問われたら、どう答えますか？", sub:"目的論",
+      ref:{ who:"フランクル / アリストテレス", concept:"意味への意志・テロス", note:"フランクルはニーチェの言葉「なぜを知る者は、どのようにも耐えられる」を実存的文脈で展開した。" }},
+  ],
+  emotion: [
+    { q:"その苦しみは、あなたに何かを伝えようとしていると思いますか？", sub:"苦しみの意味",
+      ref:{ who:"ハイデガー / フランクル", concept:"情態性・苦しみの意味", note:"ハイデガーの「情態性（Stimmung）」は、気分が単なる感情ではなく世界の開示方式であることを示す。" }},
+    { q:"感情を「正しい」「間違っている」と判断することは、どこから来ているのでしょう？", sub:"感情の評価",
+      ref:{ who:"エピクテトス / アリストテレス", concept:"ストア哲学・感情の中道", note:"ストア派は感情そのものでなく、感情への「判断（価値評価）」こそが苦しみの源だと説いた。" }},
+    { q:"あなたが恐れているのは、出来事そのものですか？それとも出来事の解釈ですか？", sub:"恐れの構造",
+      ref:{ who:"エピクテトス", concept:"制御の二分法", note:"「私たちを苦しめるのは出来事ではなく、出来事に対する見方だ」（エピクテトス）" }},
+    { q:"この感情をただ感じることと、この感情の意味を問うことの違いを、感じますか？", sub:"感情と省察",
+      ref:{ who:"メルロ＝ポンティ / ハイデガー", concept:"身体的経験・情態性", note:"メルロ＝ポンティは感情を概念以前の身体が知るものとして扱い、省察との緊張を論じた。" }},
+    { q:"あなたが感じている不安は、過去のことですか、現在のことですか、未来のことですか？", sub:"不安の時制",
+      ref:{ who:"キルケゴール / ハイデガー", concept:"不安概念・死への存在", note:"キルケゴールは不安を「自由のめまい」と表現した。可能性の前に立つときの根源的な動揺として。" }},
+    { q:"もしこの苦しみがなかったら、あなたは何を失うと思いますか？", sub:"苦しみの役割",
+      ref:{ who:"ニーチェ / フランクル", concept:"苦しみの変容・悲劇的楽観主義", note:"ニーチェは苦しみを通じた自己超克を説き、フランクルはそれを強制収容所での体験と結びつけた。" }},
+  ],
+  choice: [
+    { q:"「選ばなかった」ことと「選べなかった」ことは、あなたにとって同じですか？", sub:"自由と制約",
+      ref:{ who:"サルトル / バーリン", concept:"実存的自由・消極的自由", note:"サルトルは「人間は自由の刑に処せられている」と述べ、状況の中でも選択は常に存在すると論じた。" }},
+    { q:"あなたが迷っているとき、本当は何が怖いのだと思いますか？", sub:"決断の阻害要因",
+      ref:{ who:"キルケゴール / サルトル", concept:"不安と決断", note:"キルケゴールは決断の前の不安を「可能性のめまい」として分析した。自由が重すぎることへの恐れ。" }},
+    { q:"後悔とは何か——あなたはそれを、失敗の証拠と見ますか、選択の証拠と見ますか？", sub:"後悔の解釈",
+      ref:{ who:"サルトル / ベルクソン", concept:"選択の事後性", note:"サルトルは過去は変えられないが、過去の意味は現在の選択によって変えられると論じた。" }},
+    { q:"「正しい選択」というものが存在すると、あなたは信じていますか？", sub:"選択の正当性",
+      ref:{ who:"カント / アリストテレス", concept:"定言命法・実践的推論", note:"カントは行為の正しさを結果でなく、動機が普遍的法則たりうるかどうかに求めた。" }},
+    { q:"もしどの選択も間違いではないとしたら、あなたは何を基準に決めますか？", sub:"選択の基準",
+      ref:{ who:"サルトル / キルケゴール", concept:"価値の投企・実存的選択", note:"サルトルは価値基準そのものを選ぶことも選択であり、外部に根拠を求めることはできないと論じた。" }},
+    { q:"あなたが選ばないことを選び続けているとしたら、それもひとつの選択ではないでしょうか？", sub:"不決断の選択",
+      ref:{ who:"サルトル / カミュ", concept:"自由と責任・シジュフォス神話", note:"サルトルの「状況の中の自由」では、行動しないことも責任を生む選択として扱われる。" }},
+  ],
+  society: [
+    { q:"「普通」という言葉を使うとき、その基準はどこからきているのでしょう？", sub:"規範の起源",
+      ref:{ who:"フーコー / ニーチェ", concept:"正常化・権力-知", note:"フーコーは「正常」と「異常」の区別が権力と知の歴史的産物であることを示した。" }},
+    { q:"社会の期待に応えることと、自分に誠実であること、どちらがより本質的だと思いますか？", sub:"役割と自己",
+      ref:{ who:"サルトル / ルソー", concept:"悪い信仰（mauvaise foi）", note:"サルトルは役割に自己を同化させ、自由から逃げることを「悪い信仰（自己欺瞞）」と呼んだ。" }},
+    { q:"あなたが「すべき」と感じることは、本当にあなたが思っていることですか？", sub:"内化された規範",
+      ref:{ who:"ニーチェ / フロイト", concept:"奴隷道徳・超自我", note:"ニーチェは他者への怨恨から生まれた道徳を「奴隷道徳」として批判し、その内面化を問題とした。" }},
+    { q:"社会から外れることへの恐れは、何を失うことへの恐れですか？", sub:"逸脱への恐れ",
+      ref:{ who:"フーコー / デュルケーム", concept:"規律・アノミー", note:"デュルケームは社会との絆の喪失（アノミー）が根源的な苦しみを生むと論じた。" }},
+    { q:"もし誰も評価しないとしたら、あなたはどのような生き方を選びますか？", sub:"承認からの自由",
+      ref:{ who:"ルソー / サルトル", concept:"自己愛と自尊心の区別", note:"ルソーは自然的な「自己愛（amour de soi）」と社会的比較に基づく「自尊心（amour propre）」を区別した。" }},
+    { q:"あなたが「正常」と呼ぶものは、いつ頃、どこで学んだものだと思いますか？", sub:"正常性の学習",
+      ref:{ who:"フーコー / ブルデュー", concept:"ハビトゥス・規律権力", note:"ブルデューの「ハビトゥス」は、社会的規範が自覚なしに身体と認識に刻み込まれる過程を説明する。" }},
+  ],
+  time: [
+    { q:"「もう遅い」という感覚は、何を前提にしているのでしょうか？", sub:"時間と可能性",
+      ref:{ who:"ハイデガー / ベルクソン", concept:"被投性・純粋持続", note:"ハイデガーは「可能性としての存在」を論じ、「遅い」という判断の前提にある時間観を問い返す。" }},
+    { q:"過去の自分に責任を問うとき、あなたはどんな裁判官になっていますか？", sub:"過去への態度",
+      ref:{ who:"ニーチェ / サルトル", concept:"永遠回帰・選択の責任", note:"ニーチェの永遠回帰は「この瞬間をもう一度望めるか」という過去への肯定的関係を問う思考実験。" }},
+    { q:"死というものを意識したとき、今この瞬間はどう見えますか？", sub:"死と現在",
+      ref:{ who:"ハイデガー / エピクロス", concept:"死への存在・エピクロスの慰め", note:"エピクロスは「死は私たちに関わらない。私がいるとき死はなく、死がくれば私はいない」と述べた。" }},
+    { q:"あなたにとって「終わり」とは喪失ですか？それとも完結ですか？", sub:"終わりの意味",
+      ref:{ who:"ハイデガー / アリストテレス", concept:"死と全体性・テロス", note:"ハイデガーは死によってはじめて人生が「全体」として開示されると論じた。" }},
+    { q:"もし時間が無限にあったとしたら、あなたは今と同じことで苦しんでいると思いますか？", sub:"時間の有限性",
+      ref:{ who:"ハイデガー / パスカル", concept:"有限性・人間の条件", note:"パスカルは「人間は一本の葦にすぎない。しかし考える葦だ」と有限と無限の間の人間を描いた。" }},
+    { q:"あなたが変わらずにいたいものと、変わっていきたいものは何ですか？", sub:"変化と同一性",
+      ref:{ who:"ヘラクレイトス / パーフィット", concept:"万物流転・人格の同一性", note:"ヘラクレイトスの「同じ川に二度入ることはできない」は変化と同一性の問いの哲学的起点。" }},
+  ],
+};
+
+const THEME_NAMES = {
+  existence:"存在・自己", relation:"関係・他者", value:"価値・意味",
+  emotion:"感情・苦しみ", choice:"選択・決断", society:"社会・規範", time:"時間・死",
+};
+const THEME_KEYWORDS = {
+  existence: ['自分','自己','アイデンティティ','私とは','誰なのか','存在','本当の自分'],
+  relation:  ['人間関係','家族','友人','恋人','孤独','他者','関係','愛','つながり','わかってもら'],
+  value:     ['意味','価値','目的','生きがい','なぜ','理由','何のために','大切'],
+  emotion:   ['苦しい','辛い','悲しい','不安','怖い','怒り','感情','しんどい','つらい'],
+  choice:    ['迷','選択','決断','後悔','どうすれば','どうしたら','べきか','決められない'],
+  society:   ['社会','普通','常識','規範','期待','評価','すべき','周囲','世間'],
+  time:      ['死','終わり','将来','未来','過去','遅い','いつか'],
+};
+const REACTION_TAGS = ['沈黙','共鳴','抵抗','転換点'];
+
+// ── State ──
+let selectedThemes = new Set();
+let currentQuestions = [];
+let usedIndices = {};
+
+// ── Storage ──
+const store = {
+  getClients()  { try { return JSON.parse(localStorage.getItem('philo_clients')  || '[]'); } catch { return []; } },
+  getSessions() { try { return JSON.parse(localStorage.getItem('philo_sessions') || '[]'); } catch { return []; } },
+  saveClients(d)  { localStorage.setItem('philo_clients',  JSON.stringify(d)); },
+  saveSessions(d) { localStorage.setItem('philo_sessions', JSON.stringify(d)); },
+};
+
+// ── Tabs ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'history') renderHistory();
+    if (btn.dataset.tab === 'clients') renderClients();
+  });
+});
+
+// ── Client select ──
+function refreshClientSelect() {
+  [['sessionClientSelect',''], ['historyClientFilter','全クライアント']].forEach(([id, def]) => {
+    const sel = document.getElementById(id);
+    const cur = sel.value;
+    sel.innerHTML = def ? `<option value="">${def}</option>` : '<option value="">（未選択）</option>';
+    store.getClients().forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id; opt.textContent = c.name; sel.appendChild(opt);
+    });
+    if (cur) sel.value = cur;
+  });
+}
+refreshClientSelect();
+
+document.getElementById('quickNewClientBtn').addEventListener('click', () => {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === 'clients'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-clients'));
+  renderClients();
+  document.getElementById('newClientName').focus();
+});
+
+// ── Theme tags ──
+document.querySelectorAll('.theme-tag').forEach(tag => {
+  tag.addEventListener('click', () => {
+    const t = tag.dataset.theme;
+    if (selectedThemes.has(t)) { selectedThemes.delete(t); tag.classList.remove('selected'); }
+    else { selectedThemes.add(t); tag.classList.add('selected'); }
+  });
+});
+document.getElementById('concernInput').addEventListener('input', () => {
+  const text = document.getElementById('concernInput').value;
+  Object.entries(THEME_KEYWORDS).forEach(([theme, words]) => {
+    if (words.some(w => text.includes(w))) {
+      selectedThemes.add(theme);
+      document.querySelector(`.theme-tag[data-theme="${theme}"]`).classList.add('selected');
+    }
+  });
+});
+
+// ── API key management ──
+function loadApiKey() {
+  const key = localStorage.getItem('philo_api_key') || '';
+  if (key) {
+    document.getElementById('apiKeyInput').value = key;
+    document.getElementById('apiSavedMsg').style.display = 'inline';
+    document.getElementById('apiClearBtn').style.display = 'inline';
+    document.getElementById('apiBar').style.background = '#f0fdf4';
+    document.getElementById('apiBar').style.borderColor = '#22c55e';
+  }
+}
+loadApiKey();
+
+document.getElementById('apiSaveBtn').addEventListener('click', () => {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) { alert('APIキーを入力してください。'); return; }
+  localStorage.setItem('philo_api_key', key);
+  document.getElementById('apiSavedMsg').style.display = 'inline';
+  document.getElementById('apiClearBtn').style.display = 'inline';
+  document.getElementById('apiBar').style.background = '#f0fdf4';
+  document.getElementById('apiBar').style.borderColor = '#22c55e';
+});
+
+document.getElementById('apiClearBtn').addEventListener('click', () => {
+  localStorage.removeItem('philo_api_key');
+  document.getElementById('apiKeyInput').value = '';
+  document.getElementById('apiSavedMsg').style.display = 'none';
+  document.getElementById('apiClearBtn').style.display = 'none';
+  document.getElementById('apiBar').style.background = '';
+  document.getElementById('apiBar').style.borderColor = '';
+});
+
+// ── Generate ──
+document.getElementById('generateBtn').addEventListener('click', async () => {
+  const concern = document.getElementById('concernInput').value.trim();
+  const apiKey  = localStorage.getItem('philo_api_key') || '';
+
+  if (apiKey && concern) {
+    await generateWithAI(concern, apiKey);
+  } else {
+    if (!concern && apiKey) { alert('クライアントの語りを入力してください。'); return; }
+    if (!selectedThemes.size) { alert('テーマを少なくとも1つ選択してください。'); return; }
+    usedIndices = {}; currentQuestions = [];
+    document.getElementById('questionsList').innerHTML = '';
+    generateAndRender(5);
+  }
+});
+
+document.getElementById('moreBtn').addEventListener('click', () => generateAndRender(3));
+
+async function generateWithAI(concern, apiKey) {
+  const btn = document.getElementById('generateBtn');
+  btn.classList.add('loading');
+  btn.innerHTML = '<div class="spinner"></div>分析中…';
+
+  usedIndices = {}; currentQuestions = [];
+  document.getElementById('questionsList').innerHTML = '';
+  document.getElementById('questionsBlock').classList.remove('visible');
+
+  const systemPrompt = `あなたは哲学カウンセリングを専門とするカウンセラーの補助AIです。
+クライアントの語りを受け取り、以下のJSON形式のみで返してください。説明文・マークダウン不要。JSONのみ。
+
+{
+  "themes": ["テーマ1", "テーマ2"],
+  "questions": [
+    {
+      "q": "ソクラテス式の問い（クライアントの語りに即した具体的なもの）",
+      "sub": "問いのサブテーマ（10字以内）",
+      "theme": "テーマ名",
+      "ref": {
+        "who": "関連する哲学者名",
+        "concept": "哲学的概念名",
+        "note": "カウンセラー向けの注釈（60字以内）"
+      }
+    }
+  ]
+}
+
+問いを生成する原則：
+- クライアントが使った具体的な言葉・表現に着目する
+- yes/noで答えられない、思考を深める開かれた問いにする
+- 語りの中にある前提・価値観・言葉の意味を問い返す
+- 5つの問いを生成する
+- themesは2〜3個のみ（例：「選択・決断」「社会・規範」）`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1200,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: `クライアントの語り：\n${concern}` }],
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `APIエラー (${res.status})`);
+    }
+
+    const data = await res.json();
+    const raw  = data.content[0].text.trim();
+    const json = JSON.parse(raw.replace(/^```json\n?/, '').replace(/\n?```$/, ''));
+
+    // テーマタグを更新
+    document.querySelectorAll('.theme-tag').forEach(t => t.classList.remove('selected'));
+    selectedThemes.clear();
+
+    const aiQuestions = json.questions.map(q => ({
+      ...q,
+      annotation: { tags: [], memo: '' },
+      _ai: true,
+    }));
+    currentQuestions = aiQuestions;
+    renderQuestions(aiQuestions, 0, true);
+
+    // テーマ表示
+    if (json.themes?.length) {
+      const themeStr = json.themes.join('　/　');
+      const badge = document.createElement('div');
+      badge.id = 'aiThemeBadge';
+      badge.style.cssText = 'font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:12px;padding:8px 14px;background:var(--accent-lt);border-radius:var(--radius);border:1px solid #86efac';
+      badge.textContent = `検出されたテーマ：${themeStr}`;
+      const existing = document.getElementById('aiThemeBadge');
+      if (existing) existing.remove();
+      document.getElementById('questionsList').before(badge);
+    }
+
+    document.getElementById('questionsBlock').classList.add('visible');
+
+  } catch (e) {
+    alert(`エラーが発生しました：\n${e.message}`);
+  } finally {
+    btn.classList.remove('loading');
+    btn.textContent = '問いを生成する';
+  }
+}
+
+function generateAndRender(count) {
+  const themes = Array.from(selectedThemes);
+  const newQs = [];
+  for (let i = 0; i < count; i++) {
+    const theme = themes[i % themes.length];
+    const pool = QUESTIONS[theme];
+    if (!usedIndices[theme]) usedIndices[theme] = new Set();
+    let avail = pool.map((_,idx) => idx).filter(idx => !usedIndices[theme].has(idx));
+    if (!avail.length) { usedIndices[theme] = new Set(); avail = pool.map((_,idx) => idx); }
+    const pick = avail[Math.floor(Math.random() * avail.length)];
+    usedIndices[theme].add(pick);
+    newQs.push({ ...pool[pick], theme, annotation: { tags: [], memo: '' } });
+  }
+  currentQuestions = [...currentQuestions, ...newQs];
+  renderQuestions(newQs, currentQuestions.length - newQs.length);
+  document.getElementById('questionsBlock').classList.add('visible');
+}
+
+function renderQuestions(questions, startIndex) {
+  const list = document.getElementById('questionsList');
+  questions.forEach((q, i) => {
+    const num = startIndex + i + 1;
+    const qIdx = startIndex + i;
+    const item = document.createElement('div');
+    item.className = 'question-item';
+    item.style.animationDelay = `${i * 0.06}s`;
+    item.innerHTML = `
+      <div class="q-meta">Q${String(num).padStart(2,'0')} &nbsp;—&nbsp; ${THEME_NAMES[q.theme] || q.theme}${q._ai ? '<span class="ai-badge">AI</span>' : ''}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-sub">${q.sub}</div>
+      <button class="ref-toggle" data-ridx="${qIdx}">▸ 哲学的参照を見る</button>
+      <div class="ref-body" id="ref-${qIdx}">
+        <div class="ref-who">${q.ref.who}</div>
+        <div class="ref-concept">「${q.ref.concept}」</div>
+        <div class="ref-note">${q.ref.note}</div>
+      </div>
+    `;
+    list.appendChild(item);
+
+    item.querySelector('.ref-toggle').addEventListener('click', function() {
+      const body = document.getElementById(`ref-${qIdx}`);
+      const open = body.classList.toggle('open');
+      this.textContent = (open ? '▾' : '▸') + ' 哲学的参照を見る';
+    });
+    item.querySelectorAll('.annot-tag').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tag = btn.dataset.tag, idx = +btn.dataset.qidx;
+        const tags = currentQuestions[idx].annotation.tags;
+        if (tags.includes(tag)) { currentQuestions[idx].annotation.tags = tags.filter(t=>t!==tag); btn.classList.remove('active'); }
+        else { tags.push(tag); btn.classList.add('active'); }
+      });
+    });
+    item.querySelector('.annot-memo-btn').addEventListener('click', () => {
+      const area = document.getElementById(`annot-memo-${qIdx}`);
+      area.classList.toggle('open');
+      if (area.classList.contains('open')) area.focus();
+    });
+    item.querySelector(`#annot-memo-${qIdx}`).addEventListener('input', function() {
+      currentQuestions[qIdx].annotation.memo = this.value;
+    });
+  });
+}
+
+// ── Save ──
+function doSave(reportQuestions, notes) {
+  const sessions = store.getSessions();
+  const clientId = document.getElementById('sessionClientSelect').value;
+  const clientName = clientId ? (store.getClients().find(c => String(c.id) === String(clientId))?.name || '') : '';
+  sessions.unshift({
+    id: Date.now(), clientId: clientId || null, clientName,
+    date: new Date().toISOString(),
+    concern: document.getElementById('concernInput').value.trim(),
+    themes: Array.from(selectedThemes),
+    questions: currentQuestions,
+    reportQuestions, notes,
+  });
+  store.saveSessions(sessions);
+}
+
+document.getElementById('saveBtn').addEventListener('click', () => {
+  doSave('', '');
+  alert('保存しました。');
+});
+
+// ── Report ──
+document.getElementById('reportBtn').addEventListener('click', () => {
+  buildPreview();
+  document.getElementById('reportModal').classList.add('open');
+});
+['reportQuestions','reportNotes'].forEach(id => {
+  document.getElementById(id).addEventListener('input', buildPreview);
+});
+
+function buildPreview() {
+  const concern  = document.getElementById('concernInput').value.trim();
+  const rq       = document.getElementById('reportQuestions').value.trim();
+  const notes    = document.getElementById('reportNotes').value.trim();
+  const clientId = document.getElementById('sessionClientSelect').value;
+  const clientName = clientId ? (store.getClients().find(c => String(c.id) === String(clientId))?.name || '未登録') : '未登録';
+  const date   = new Date().toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric'});
+  const themes = Array.from(selectedThemes).map(t => THEME_NAMES[t]).join('、');
+
+  let r = `■ 哲学カウンセリング記録\n日時：${date}\nクライアント：${clientName}\nテーマ：${themes}\n\n`;
+  r += `【語られた悩み】\n${concern || '（未記入）'}\n\n`;
+  r += `【提示した問い・対話の流れ】\n${rq || '（未記入）'}\n`;
+  if (notes) r += `\n【所見・申し送り】\n${notes}`;
+  document.getElementById('reportPreview').textContent = r;
+}
+
+document.getElementById('reportCopyBtn').addEventListener('click', () => {
+  navigator.clipboard.writeText(document.getElementById('reportPreview').textContent).then(() => {
+    const btn = document.getElementById('reportCopyBtn');
+    btn.textContent = 'コピーしました ✓';
+    setTimeout(() => btn.textContent = 'テキストをコピー', 2000);
+  });
+});
+document.getElementById('reportSaveBtn').addEventListener('click', () => {
+  doSave(document.getElementById('reportQuestions').value.trim(), document.getElementById('reportNotes').value.trim());
+  document.getElementById('reportModal').classList.remove('open');
+  document.getElementById('reportQuestions').value = '';
+  document.getElementById('reportNotes').value = '';
+  alert('保存しました。');
+});
+document.getElementById('reportCloseBtn').addEventListener('click', () => document.getElementById('reportModal').classList.remove('open'));
+document.getElementById('reportModal').addEventListener('click', e => { if (e.target === document.getElementById('reportModal')) document.getElementById('reportModal').classList.remove('open'); });
+
+// ── Clients ──
+document.getElementById('addClientBtn').addEventListener('click', () => {
+  const name = document.getElementById('newClientName').value.trim();
+  if (!name) { alert('名前を入力してください。'); return; }
+  const clients = store.getClients();
+  clients.push({ id: Date.now(), name, notes: document.getElementById('newClientNote').value.trim(), createdAt: new Date().toISOString() });
+  store.saveClients(clients);
+  document.getElementById('newClientName').value = '';
+  document.getElementById('newClientNote').value = '';
+  renderClients(); refreshClientSelect();
+});
+
+function renderClients() {
+  const list = document.getElementById('clientList');
+  const clients = store.getClients();
+  list.innerHTML = '';
+  if (!clients.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">👤</div><p>まだクライアントが登録されていません</p></div>`;
+    return;
+  }
+  clients.forEach(c => {
+    const sessionCount = store.getSessions().filter(s => String(s.clientId) === String(c.id)).length;
+    const card = document.createElement('div');
+    card.className = 'client-card';
+    card.innerHTML = `
+      <div class="client-avatar">${c.name.charAt(0)}</div>
+      <div class="client-body">
+        <div class="client-name">${c.name}</div>
+        <div class="client-note-text">${c.notes || '（メモなし）'}</div>
+        <div class="client-meta">セッション ${sessionCount}件 ／ 登録日 ${new Date(c.createdAt).toLocaleDateString('ja-JP')}</div>
+      </div>
+      <div class="client-actions">
+        <button class="btn" data-cid="${c.id}">履歴</button>
+        <button class="btn danger" data-cid="${c.id}">削除</button>
+      </div>
+    `;
+    card.querySelectorAll('.btn')[0].addEventListener('click', e => { e.stopPropagation(); openClientDetail(c); });
+    card.querySelectorAll('.btn')[1].addEventListener('click', e => {
+      e.stopPropagation();
+      if (confirm(`「${c.name}」を削除しますか？`)) {
+        store.saveClients(store.getClients().filter(x => x.id !== c.id));
+        renderClients(); refreshClientSelect();
+      }
+    });
+    list.appendChild(card);
+  });
+}
+
+function openClientDetail(client) {
+  document.getElementById('cdClientName').textContent = client.name;
+  document.getElementById('cdClientNote').textContent = client.notes || '';
+  const sessions = store.getSessions().filter(s => String(s.clientId) === String(client.id));
+  const sl = document.getElementById('cdSessionList');
+  sl.innerHTML = '';
+  if (!sessions.length) {
+    sl.innerHTML = `<div class="empty" style="padding:32px"><p>セッション記録がありません</p></div>`;
+  } else {
+    sessions.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'session-card';
+      card.innerHTML = `
+        <div class="session-date">${new Date(s.date).toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric',weekday:'short'})}</div>
+        <div class="session-concern">${s.concern || '（記録なし）'}</div>
+        <div class="session-count">問い ${s.questions.length}件</div>
+      `;
+      card.addEventListener('click', () => openDetail(s));
+      sl.appendChild(card);
+    });
+  }
+  document.getElementById('clientDetailOverlay').classList.add('open');
+}
+
+document.getElementById('cdClose').addEventListener('click', () => document.getElementById('clientDetailOverlay').classList.remove('open'));
+document.getElementById('clientDetailOverlay').addEventListener('click', e => { if (e.target === document.getElementById('clientDetailOverlay')) document.getElementById('clientDetailOverlay').classList.remove('open'); });
+
+// ── History ──
+document.getElementById('historyClientFilter').addEventListener('change', renderHistory);
+function renderHistory() {
+  const filter = document.getElementById('historyClientFilter').value;
+  let sessions = store.getSessions();
+  if (filter) sessions = sessions.filter(s => String(s.clientId) === String(filter));
+  const list = document.getElementById('historyList');
+  list.innerHTML = '';
+  if (!sessions.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">📋</div><p>セッション記録がまだありません</p></div>`;
+    return;
+  }
+  sessions.forEach(s => {
+    const d = new Date(s.date);
+    const card = document.createElement('div');
+    card.className = 'session-card';
+    const themeTags = s.themes.map(t => `<span class="session-tag">${THEME_NAMES[t]}</span>`).join('');
+    card.innerHTML = `
+      <div class="session-card-head">
+        <div>
+          <div class="session-date">${d.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'})}</div>
+          ${s.clientName ? `<div class="session-client-label">${s.clientName}</div>` : ''}
+        </div>
+        <button class="btn danger" style="font-size:0.72rem;padding:4px 12px" data-id="${s.id}">削除</button>
+      </div>
+      <div class="session-concern">${s.concern || '（記録なし）'}</div>
+      <div class="session-tags">${themeTags}</div>
+      <div class="session-count">問い ${s.questions.length}件${s.notes ? ' ・ メモあり' : ''}</div>
+    `;
+    card.addEventListener('click', e => { if (!e.target.closest('.danger')) openDetail(s); });
+    card.querySelector('.danger').addEventListener('click', e => {
+      e.stopPropagation();
+      if (confirm('このセッションを削除しますか？')) { store.saveSessions(store.getSessions().filter(x => x.id !== s.id)); renderHistory(); }
+    });
+    list.appendChild(card);
+  });
+}
+
+// ── Detail ──
+function openDetail(s) {
+  document.getElementById('detailDate').textContent = new Date(s.date).toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+  document.getElementById('detailClientName').textContent = s.clientName || '';
+  document.getElementById('detailConcern').textContent = s.concern || '（記録なし）';
+
+  const qList = document.getElementById('detailQuestions');
+  qList.innerHTML = '';
+  s.questions.forEach((q, i) => {
+    const item = document.createElement('div');
+    item.className = 'question-item';
+    item.style.cssText = 'animation:none;opacity:1';
+    const tagStr = q.annotation?.tags?.length ? `　<span style="font-size:.7rem;color:var(--amber);font-weight:700">[${q.annotation.tags.join('・')}]</span>` : '';
+    const memoStr = q.annotation?.memo ? `<div style="font-size:.78rem;color:var(--text-3);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">メモ：${q.annotation.memo}</div>` : '';
+    item.innerHTML = `
+      <div class="q-meta">Q${String(i+1).padStart(2,'0')} — ${THEME_NAMES[q.theme]}${tagStr}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-sub">${q.sub} ／ ${q.ref?.who || ''}</div>
+      ${memoStr}
+    `;
+    qList.appendChild(item);
+  });
+
+  const rs = document.getElementById('detailReportSection');
+  const reportContent = [s.reportQuestions ? `【提示した問い・対話の流れ】\n${s.reportQuestions}` : '', s.notes ? `【所見・申し送り】\n${s.notes}` : ''].filter(Boolean).join('\n\n');
+  if (reportContent) { rs.style.display = 'block'; document.getElementById('detailReport').textContent = reportContent; }
+  else rs.style.display = 'none';
+
+  document.getElementById('detailOverlay').classList.add('open');
+}
+document.getElementById('detailClose').addEventListener('click', () => document.getElementById('detailOverlay').classList.remove('open'));
+document.getElementById('detailOverlay').addEventListener('click', e => { if (e.target === document.getElementById('detailOverlay')) document.getElementById('detailOverlay').classList.remove('open'); });
+</script>
+</body>
+</html>
