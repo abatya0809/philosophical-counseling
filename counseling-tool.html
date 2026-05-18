@@ -539,6 +539,22 @@
       <span id="apiStatusLabel"></span>
       <button class="api-bar-link" id="apiToggleBtn" style="font-size:0.75rem;color:var(--blue)"></button>
     </div>
+    <!-- スタイル設定 -->
+    <div id="styleBar" style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <span style="font-size:0.78rem;color:var(--text-3)">問いのスタイル：</span>
+      <span style="font-size:0.78rem;font-weight:700;color:var(--accent)">木下スタイル 有効</span>
+      <button class="api-bar-link" id="styleToggleBtn" style="font-size:0.75rem;color:var(--blue)">編集する</button>
+    </div>
+    <div id="styleForm" style="display:none;background:var(--surface-2);border:1px solid var(--border-dk);border-radius:var(--radius);padding:16px 18px;margin-bottom:20px">
+      <div class="field-note" style="margin-bottom:8px">AIへのスタイル指示文です。使いながら自由に調整できます。</div>
+      <textarea id="stylePromptInput" style="min-height:220px;font-size:0.8rem;line-height:1.7"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn" id="styleSaveBtn">保存</button>
+        <button class="btn" id="styleResetBtn" style="color:var(--text-3)">初期値に戻す</button>
+        <button class="btn" id="styleCloseBtn" style="margin-left:auto">閉じる</button>
+      </div>
+    </div>
+
     <div id="apiForm" style="display:none;background:var(--amber-lt);border:1px solid #d97706;border-radius:var(--radius);padding:12px 18px;margin-bottom:20px;display:none">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         <span class="api-bar-label">API キー</span>
@@ -891,6 +907,70 @@ document.getElementById('concernInput').addEventListener('input', () => {
   });
 });
 
+// ── Style prompt ──
+const DEFAULT_STYLE_PROMPT = `【カウンセラーの哲学的スタンス】
+ソクラテスとヴィトゲンシュタインを哲学的基盤とする。
+
+核心的な視点：
+多くの悩みの根底には「言葉の問題」がある。クライアントは定義を吟味せずに言葉を使い、その言葉に縛られていることが多い。ヴィトゲンシュタインの言語ゲーム論の観点から、言葉の意味は文脈によって異なるにも関わらず、クライアントがそれを一義的に捉えてしまっている場合に着目する。
+
+問いを生成する際の優先順位：
+1. クライアントの語りの中から「鍵となる言葉」を特定する
+   - 曖昧に、あるいは無自覚に使われている言葉
+   - 意味を問われたことがなさそうな言葉（例：普通、幸せ、成功、正しい）
+   - 社会・家族・文化から引き継いだと思われる言葉
+   - 問題の構造を作っていると思われる前提を含む言葉
+
+2. その言葉の定義を直接問う形式を最優先する
+   - 「〇〇という言葉を、どういう意味で使っていますか？」
+   - 「あなたにとって〇〇とは何を指しますか？」
+
+3. 定義をさらに深める問いを続ける
+   - 一貫性：「他の場面でも同じ意味で使いますか？」
+   - 起源：「その意味はどこから来ましたか？いつそう思うようになりましたか？」
+   - 限界：「その言葉では言い表せないことがありますか？」
+   - 反対語：「その反対はどういう状態ですか？それは実在しますか？」
+
+目指すゴール（複数あり）：
+・クライアントが自分自身の言葉で定義を見つける
+・問題が言語的問題であることに気づく（「言葉が問題を作っていた」）
+・自分の言葉の使い方の矛盾・不整合に気づく
+・「わからない」を受け入れ、確実性への強迫から解放される
+
+問いの形式：
+・シンプルで短い問いを優先する（長い問いは避ける）
+・クライアントが使った具体的な言葉を必ず対象にする
+・哲学者の参照（ref）はヴィトゲンシュタインまたはソクラテスを優先的に含める`;
+
+function getStylePrompt() {
+  return localStorage.getItem('philo_style_prompt') || DEFAULT_STYLE_PROMPT;
+}
+
+// スタイル設定UI
+document.getElementById('styleToggleBtn').addEventListener('click', () => {
+  const form = document.getElementById('styleForm');
+  const open = form.style.display === 'none' || form.style.display === '';
+  form.style.display = open ? 'block' : 'none';
+  if (open) document.getElementById('stylePromptInput').value = getStylePrompt();
+});
+
+document.getElementById('styleSaveBtn').addEventListener('click', () => {
+  const val = document.getElementById('stylePromptInput').value.trim();
+  if (val) localStorage.setItem('philo_style_prompt', val);
+  document.getElementById('styleForm').style.display = 'none';
+});
+
+document.getElementById('styleResetBtn').addEventListener('click', () => {
+  if (confirm('初期値（木下スタイル）に戻しますか？')) {
+    localStorage.removeItem('philo_style_prompt');
+    document.getElementById('stylePromptInput').value = DEFAULT_STYLE_PROMPT;
+  }
+});
+
+document.getElementById('styleCloseBtn').addEventListener('click', () => {
+  document.getElementById('styleForm').style.display = 'none';
+});
+
 // ── API key management ──
 function renderApiStatus() {
   const key = localStorage.getItem('philo_api_key') || '';
@@ -993,7 +1073,7 @@ async function generateContinuation(clientResponse, apiKey) {
 {
   "questions": [
     {
-      "q": "前の返答を踏まえた、さらに深い問い",
+      "q": "問い",
       "sub": "問いのサブテーマ（10字以内）",
       "theme": "テーマ名（日本語）",
       "ref": {
@@ -1005,10 +1085,12 @@ async function generateContinuation(clientResponse, apiKey) {
   ]
 }
 
-原則：
-- クライアントの返答の中の具体的な言葉・沈黙・感情に着目する
-- 前の問いで触れなかった角度から掘り下げる
-- 3つ生成する`;
+${getStylePrompt()}
+
+出力ルール：
+- 3つの問いを生成する
+- クライアントの返答の中に出てきた言葉を対象にする
+- 前の問いで触れなかった角度から掘り下げる`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -1103,9 +1185,9 @@ async function generateWithAI(concern, apiKey) {
   "themes": ["テーマ1", "テーマ2"],
   "questions": [
     {
-      "q": "ソクラテス式の問い（クライアントの語りに即した具体的なもの）",
+      "q": "問い",
       "sub": "問いのサブテーマ（10字以内）",
-      "theme": "テーマ名",
+      "theme": "テーマ名（日本語）",
       "ref": {
         "who": "関連する哲学者名",
         "concept": "哲学的概念名",
@@ -1115,12 +1197,11 @@ async function generateWithAI(concern, apiKey) {
   ]
 }
 
-問いを生成する原則：
-- クライアントが使った具体的な言葉・表現に着目する
-- yes/noで答えられない、思考を深める開かれた問いにする
-- 語りの中にある前提・価値観・言葉の意味を問い返す
+${getStylePrompt()}
+
+出力ルール：
 - 5つの問いを生成する
-- themesは2〜3個のみ（例：「選択・決断」「社会・規範」）`;
+- themesは2〜3個のみ`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
