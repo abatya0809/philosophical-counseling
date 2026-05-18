@@ -478,12 +478,18 @@
   <!-- ══ セッション ══ -->
   <div class="panel active" id="panel-session">
 
-    <div class="api-bar" id="apiBar">
-      <span class="api-bar-label">Claude API キー</span>
-      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off">
-      <button class="btn" id="apiSaveBtn" style="white-space:nowrap">保存</button>
-      <span class="api-bar-saved" id="apiSavedMsg" style="display:none">✓ 設定済み</span>
-      <button class="api-bar-link" id="apiClearBtn" style="display:none">クリア</button>
+    <div id="apiBar" style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+      <span style="font-size:0.78rem;color:var(--text-3)">Claude API：</span>
+      <span id="apiStatusLabel"></span>
+      <button class="api-bar-link" id="apiToggleBtn" style="font-size:0.75rem;color:var(--blue)"></button>
+    </div>
+    <div id="apiForm" style="display:none;background:var(--amber-lt);border:1px solid #d97706;border-radius:var(--radius);padding:12px 18px;margin-bottom:20px;display:none">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span class="api-bar-label">API キー</span>
+        <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off" style="flex:1;min-width:200px">
+        <button class="btn" id="apiSaveBtn" style="white-space:nowrap">保存</button>
+        <button class="api-bar-link" id="apiClearBtn" style="display:none;color:var(--red)">クリア</button>
+      </div>
     </div>
 
     <div class="client-bar">
@@ -797,35 +803,47 @@ document.getElementById('concernInput').addEventListener('input', () => {
 });
 
 // ── API key management ──
-function loadApiKey() {
+function renderApiStatus() {
   const key = localStorage.getItem('philo_api_key') || '';
+  const label    = document.getElementById('apiStatusLabel');
+  const toggleBtn = document.getElementById('apiToggleBtn');
   if (key) {
-    document.getElementById('apiKeyInput').value = key;
-    document.getElementById('apiSavedMsg').style.display = 'inline';
-    document.getElementById('apiClearBtn').style.display = 'inline';
-    document.getElementById('apiBar').style.background = '#f0fdf4';
-    document.getElementById('apiBar').style.borderColor = '#22c55e';
+    label.innerHTML = '<span style="color:var(--accent);font-weight:700;font-size:0.78rem">✓ AI生成 有効</span>';
+    toggleBtn.textContent = '設定を変更';
+  } else {
+    label.innerHTML = '<span style="color:var(--text-3);font-size:0.78rem">未設定（パターン生成モード）</span>';
+    toggleBtn.textContent = 'APIキーを設定';
   }
 }
-loadApiKey();
+renderApiStatus();
+
+document.getElementById('apiToggleBtn').addEventListener('click', () => {
+  const form = document.getElementById('apiForm');
+  const open = form.style.display === 'none' || form.style.display === '';
+  form.style.display = open ? 'block' : 'none';
+  if (open) {
+    const key = localStorage.getItem('philo_api_key') || '';
+    document.getElementById('apiKeyInput').value = key ? '（保存済み）' : '';
+    document.getElementById('apiClearBtn').style.display = key ? 'inline' : 'none';
+    document.getElementById('apiKeyInput').placeholder = key ? 'sk-ant-... （新しいキーを入力して上書き）' : 'sk-ant-api03-...';
+  }
+});
 
 document.getElementById('apiSaveBtn').addEventListener('click', () => {
-  const key = document.getElementById('apiKeyInput').value.trim();
-  if (!key) { alert('APIキーを入力してください。'); return; }
-  localStorage.setItem('philo_api_key', key);
-  document.getElementById('apiSavedMsg').style.display = 'inline';
-  document.getElementById('apiClearBtn').style.display = 'inline';
-  document.getElementById('apiBar').style.background = '#f0fdf4';
-  document.getElementById('apiBar').style.borderColor = '#22c55e';
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (!val || val === '（保存済み）') { alert('新しいAPIキーを入力してください。'); return; }
+  localStorage.setItem('philo_api_key', val);
+  document.getElementById('apiForm').style.display = 'none';
+  renderApiStatus();
 });
 
 document.getElementById('apiClearBtn').addEventListener('click', () => {
+  if (!confirm('APIキーを削除しますか？')) return;
   localStorage.removeItem('philo_api_key');
   document.getElementById('apiKeyInput').value = '';
-  document.getElementById('apiSavedMsg').style.display = 'none';
   document.getElementById('apiClearBtn').style.display = 'none';
-  document.getElementById('apiBar').style.background = '';
-  document.getElementById('apiBar').style.borderColor = '';
+  document.getElementById('apiForm').style.display = 'none';
+  renderApiStatus();
 });
 
 // ── Generate ──
