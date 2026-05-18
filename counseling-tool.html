@@ -1312,22 +1312,6 @@ function renderQuestions(questions, startIndex) {
       const open = body.classList.toggle('open');
       this.textContent = (open ? '▾' : '▸') + ' 哲学的参照を見る';
     });
-    item.querySelectorAll('.annot-tag').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tag = btn.dataset.tag, idx = +btn.dataset.qidx;
-        const tags = currentQuestions[idx].annotation.tags;
-        if (tags.includes(tag)) { currentQuestions[idx].annotation.tags = tags.filter(t=>t!==tag); btn.classList.remove('active'); }
-        else { tags.push(tag); btn.classList.add('active'); }
-      });
-    });
-    item.querySelector('.annot-memo-btn').addEventListener('click', () => {
-      const area = document.getElementById(`annot-memo-${qIdx}`);
-      area.classList.toggle('open');
-      if (area.classList.contains('open')) area.focus();
-    });
-    item.querySelector(`#annot-memo-${qIdx}`).addEventListener('input', function() {
-      currentQuestions[qIdx].annotation.memo = this.value;
-    });
   });
 }
 
