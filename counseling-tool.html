@@ -527,6 +527,16 @@
         <button class="btn blue" id="reportBtn">レポートを作成</button>
         <button class="btn blue" id="saveBtn">保存する</button>
       </div>
+
+      <!-- 対話継続ブロック -->
+      <div id="continuationBlock" style="display:none">
+        <hr class="divider">
+        <div class="sec-head" style="margin-bottom:8px">対話を続ける</div>
+        <p class="field-note" style="margin-bottom:10px">問いに対してクライアントがどう応じたか、対話がどう展開したかを入力してください。文脈を読んでさらに深い問いを生成します。</p>
+        <textarea id="continuationInput" style="min-height:96px" placeholder="例：「親に認められたいのかもしれない」と言った後、長い沈黙があった。「でもそれが本当に自分の望みなのかわからない」と続けた。"></textarea>
+        <button class="btn-primary" id="continueBtn" style="margin-top:10px">対話を深める問いを生成する</button>
+        <div id="continuationList" style="margin-top:16px"></div>
+      </div>
     </div>
   </div>
 
@@ -741,6 +751,7 @@ const REACTION_TAGS = ['沈黙','共鳴','抵抗','転換点'];
 let selectedThemes = new Set();
 let currentQuestions = [];
 let usedIndices = {};
+let conversationHistory = []; // {role: 'questions'|'response', content}
 
 // ── Storage ──
 const store = {
@@ -851,6 +862,11 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
   const concern = document.getElementById('concernInput').value.trim();
   const apiKey  = localStorage.getItem('philo_api_key') || '';
 
+  // 新セッション開始時にリセット
+  conversationHistory = [];
+  document.getElementById('continuationList').innerHTML = '';
+  document.getElementById('continuationInput').value = '';
+
   if (apiKey && concern) {
     await generateWithAI(concern, apiKey);
   } else {
@@ -863,6 +879,135 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
 });
 
 document.getElementById('moreBtn').addEventListener('click', () => generateAndRender(3));
+
+// ── 対話継続 ──
+document.getElementById('continueBtn').addEventListener('click', async () => {
+  const response = document.getElementById('continuationInput').value.trim();
+  if (!response) { alert('クライアントの返答・展開を入力してください。'); return; }
+  const apiKey = localStorage.getItem('philo_api_key') || '';
+  if (!apiKey) { alert('対話継続にはAPIキーが必要です。'); return; }
+  await generateContinuation(response, apiKey);
+});
+
+async function generateContinuation(clientResponse, apiKey) {
+  const btn = document.getElementById('continueBtn');
+  btn.textContent = '生成中…'; btn.disabled = true;
+
+  // 会話履歴に今の返答を追加
+  conversationHistory.push({ role: 'response', content: clientResponse });
+
+  const concern = document.getElementById('concernInput').value.trim();
+
+  // 文脈を組み立てる
+  let context = `【クライアントの最初の語り】\n${concern}\n`;
+  conversationHistory.forEach((h, i) => {
+    if (h.role === 'questions') {
+      context += `\n【第${Math.floor(i/2)+1}ラウンドの問い】\n${h.content}`;
+    } else {
+      context += `\n【クライアントの返答・展開】\n${h.content}`;
+    }
+  });
+
+  const systemPrompt = `あなたは哲学カウンセリングを専門とするカウンセラーの補助AIです。
+クライアントとの対話の経緯を受け取り、次の深掘り問いを3つ生成してください。
+以下のJSON形式のみで返してください。説明文・マークダウン不要。JSONのみ。
+
+{
+  "questions": [
+    {
+      "q": "前の返答を踏まえた、さらに深い問い",
+      "sub": "問いのサブテーマ（10字以内）",
+      "theme": "テーマ名（日本語）",
+      "ref": {
+        "who": "関連する哲学者名",
+        "concept": "哲学的概念名",
+        "note": "カウンセラー向けの注釈（60字以内）"
+      }
+    }
+  ]
+}
+
+原則：
+- クライアントの返答の中の具体的な言葉・沈黙・感情に着目する
+- 前の問いで触れなかった角度から掘り下げる
+- 3つ生成する`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: context }],
+      }),
+    });
+
+    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.error?.message || `APIエラー (${res.status})`); }
+
+    const data = await res.json();
+    const raw  = data.content[0].text.trim();
+    const json = JSON.parse(raw.replace(/^```json\n?/,'').replace(/\n?```$/,''));
+
+    const newQs = json.questions.map(q => ({ ...q, annotation: { tags:[], memo:'' }, _ai: true, _depth: conversationHistory.filter(h=>h.role==='response').length }));
+    currentQuestions = [...currentQuestions, ...newQs];
+
+    // 返答のテキストをhistoryに記録した問いとして保存
+    const qText = newQs.map((q,i) => `${i+1}. ${q.q}`).join('\n');
+    conversationHistory.push({ role: 'questions', content: qText });
+
+    renderContinuationQuestions(newQs, clientResponse);
+    document.getElementById('continuationInput').value = '';
+
+  } catch(e) {
+    alert(`エラー：${e.message}`);
+    conversationHistory.pop(); // 失敗時はpopして戻す
+  } finally {
+    btn.textContent = '対話を深める問いを生成する'; btn.disabled = false;
+  }
+}
+
+function renderContinuationQuestions(questions, clientResponse) {
+  const container = document.getElementById('continuationList');
+  const depth = questions[0]?._depth || 1;
+
+  // 返答の引用
+  const responseBlock = document.createElement('div');
+  responseBlock.style.cssText = 'background:var(--blue-lt);border:1px solid #b8cde8;border-left:4px solid var(--blue);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px;font-size:.85rem;color:var(--text-2);line-height:1.7';
+  responseBlock.innerHTML = `<span style="font-size:.7rem;font-weight:700;color:var(--blue);display:block;margin-bottom:4px">▶ クライアントの返答（第${depth}ラウンド）</span>${clientResponse}`;
+  container.appendChild(responseBlock);
+
+  // 深掘り問い
+  questions.forEach((q, i) => {
+    const num = currentQuestions.length - questions.length + i + 1;
+    const item = document.createElement('div');
+    item.className = 'question-item';
+    item.style.cssText = `animation-delay:${i*0.07}s;border-left-color:var(--blue)`;
+    item.innerHTML = `
+      <div class="q-meta" style="color:var(--blue)">Q${String(num).padStart(2,'0')} — ${q.theme} <span class="ai-badge" style="background:var(--blue)">深掘り</span></div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-sub">${q.sub}</div>
+      <button class="ref-toggle" data-ridx="c${num}">▸ 哲学的参照を見る</button>
+      <div class="ref-body" id="ref-c${num}">
+        <div class="ref-who">${q.ref.who}</div>
+        <div class="ref-concept">「${q.ref.concept}」</div>
+        <div class="ref-note">${q.ref.note}</div>
+      </div>
+    `;
+    item.querySelector('.ref-toggle').addEventListener('click', function() {
+      const body = document.getElementById(`ref-c${num}`);
+      const open = body.classList.toggle('open');
+      this.textContent = (open ? '▾' : '▸') + ' 哲学的参照を見る';
+    });
+    container.appendChild(item);
+  });
+}
 
 async function generateWithAI(concern, apiKey) {
   const btn = document.getElementById('generateBtn');
@@ -949,7 +1094,12 @@ async function generateWithAI(concern, apiKey) {
       document.getElementById('questionsList').before(badge);
     }
 
+    // 最初の問いを会話履歴に記録
+    const qText = aiQuestions.map((q,i) => `${i+1}. ${q.q}`).join('\n');
+    conversationHistory.push({ role: 'questions', content: qText });
+
     document.getElementById('questionsBlock').classList.add('visible');
+    document.getElementById('continuationBlock').style.display = 'block';
 
   } catch (e) {
     alert(`エラーが発生しました：\n${e.message}`);
