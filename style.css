@@ -1232,15 +1232,15 @@ details[open] .faq__q::after {
 .books__grid {
   display: flex;
   flex-direction: column;
-  gap: 64px;
+  gap: 72px;
 }
 
 .books__item {
   display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 56px;
+  grid-template-columns: 260px 1fr;
+  gap: 72px;
   align-items: center;
-  padding-bottom: 64px;
+  padding-bottom: 72px;
   border-bottom: 1px solid var(--border-lt);
 }
 .books__item:last-child {
@@ -1254,7 +1254,7 @@ details[open] .faq__q::after {
 }
 
 .books__cover {
-  width: 220px;
+  width: 260px;
   height: auto;
   display: block;
   position: relative;
@@ -1263,10 +1263,8 @@ details[open] .faq__q::after {
 }
 
 .books__cover--landscape {
-  width: 220px;
+  width: 260px;
   height: auto;
-  object-fit: cover;
-  object-position: center;
 }
 
 .books__cover-shadow {
@@ -1321,8 +1319,11 @@ details[open] .faq__q::after {
 }
 
 @media (max-width: 680px) {
-  .books__item { grid-template-columns: 1fr; gap: 28px; }
-  .books__cover { width: 160px; margin: 0 auto; }
+  .books__item { grid-template-columns: 1fr; gap: 32px; justify-items: center; text-align: center; }
+  .books__cover, .books__cover--landscape { width: 200px; margin: 0 auto; }
+  .books__cover-wrap { margin: 0 auto; }
+  .books__read { text-align: left; }
+  .books__actions { justify-content: center; }
 }
 
 /* ==========================================
