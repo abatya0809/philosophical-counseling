@@ -736,6 +736,17 @@ a { color: inherit; text-decoration: none; }
   top: 5px;
 }
 
+.pricing__notice {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text);
+  letter-spacing: 0.06em;
+  padding: 16px 24px;
+  border: 1px solid var(--gold-dk);
+  background: rgba(180,150,80,0.06);
+  margin-bottom: 16px;
+}
+
 .pricing__note {
   text-align: center;
   font-size: 0.8rem;
@@ -1219,16 +1230,22 @@ details[open] .faq__q::after {
 .books { background: var(--bg-2); }
 
 .books__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
 }
 
 .books__item {
   display: grid;
-  grid-template-columns: 180px 1fr;
-  gap: 36px;
-  align-items: start;
+  grid-template-columns: 220px 1fr;
+  gap: 56px;
+  align-items: center;
+  padding-bottom: 64px;
+  border-bottom: 1px solid var(--border-lt);
+}
+.books__item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .books__cover-wrap {
@@ -1237,7 +1254,7 @@ details[open] .faq__q::after {
 }
 
 .books__cover {
-  width: 180px;
+  width: 220px;
   height: auto;
   display: block;
   position: relative;
@@ -1246,8 +1263,8 @@ details[open] .faq__q::after {
 }
 
 .books__cover--landscape {
-  width: 180px;
-  height: 112px;
+  width: 220px;
+  height: auto;
   object-fit: cover;
   object-position: center;
 }
@@ -1303,14 +1320,9 @@ details[open] .faq__q::after {
   gap: 12px;
 }
 
-@media (max-width: 900px) {
-  .books__grid { grid-template-columns: 1fr; gap: 48px; }
-}
-
-@media (max-width: 600px) {
-  .books__item { grid-template-columns: 1fr; }
+@media (max-width: 680px) {
+  .books__item { grid-template-columns: 1fr; gap: 28px; }
   .books__cover { width: 160px; margin: 0 auto; }
-  .books__cover--landscape { width: 100%; height: auto; }
 }
 
 /* ==========================================
