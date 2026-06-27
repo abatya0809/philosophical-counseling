@@ -1218,11 +1218,17 @@ details[open] .faq__q::after {
    ========================================== */
 .books { background: var(--bg-2); }
 
-.books__inner {
+.books__grid {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 72px;
-  align-items: center;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+}
+
+.books__item {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 36px;
+  align-items: start;
 }
 
 .books__cover-wrap {
@@ -1231,7 +1237,7 @@ details[open] .faq__q::after {
 }
 
 .books__cover {
-  width: 260px;
+  width: 180px;
   height: auto;
   display: block;
   position: relative;
@@ -1239,12 +1245,19 @@ details[open] .faq__q::after {
   box-shadow: 8px 12px 40px rgba(0,0,0,0.6);
 }
 
+.books__cover--landscape {
+  width: 180px;
+  height: 112px;
+  object-fit: cover;
+  object-position: center;
+}
+
 .books__cover-shadow {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  right: -16px;
-  bottom: -16px;
+  top: 12px;
+  left: 12px;
+  right: -12px;
+  bottom: -12px;
   border: 1px solid var(--border);
   z-index: 0;
 }
@@ -1290,15 +1303,14 @@ details[open] .faq__q::after {
   gap: 12px;
 }
 
-@media (max-width: 760px) {
-  .books__inner {
-    grid-template-columns: 1fr;
-    gap: 36px;
-  }
-  .books__cover {
-    width: 180px;
-    margin: 0 auto;
-  }
+@media (max-width: 900px) {
+  .books__grid { grid-template-columns: 1fr; gap: 48px; }
+}
+
+@media (max-width: 600px) {
+  .books__item { grid-template-columns: 1fr; }
+  .books__cover { width: 160px; margin: 0 auto; }
+  .books__cover--landscape { width: 100%; height: auto; }
 }
 
 /* ==========================================
